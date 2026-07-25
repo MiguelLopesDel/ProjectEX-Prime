@@ -1,4 +1,4 @@
-// 1.20.1	2026-07-25T12:20:39.582551145	Item Models: projectex
+// 1.20.1	2026-07-25T19:28:41.709967538	Item Models: projectex
 1fbb618d6b832852b31a624cb6bbca0c3c87df79 assets/projectex/models/item/basic_collector.json
 1fbb618d6b832852b31a624cb6bbca0c3c87df79 assets/projectex/models/item/basic_compressed_collector.json
 dfd99d4593b9c44601e73aaf62c0d0ed47f064cb assets/projectex/models/item/basic_power_flower.json
@@ -9,6 +9,12 @@ c9f215b9b0256444a114da3aeaf8c2762ba8bffd assets/projectex/models/item/basic_rela
 63a37e4cd6241ed703b7b7b4974277892d62f6ab assets/projectex/models/item/blue_power_flower.json
 a3221ce57e17f622d1c4a97da60afe04594edd8b assets/projectex/models/item/blue_relay.json
 77e9c2c08d66e4ba983428bb7746b5359bf4c5f4 assets/projectex/models/item/clay_matter.json
+9f7d5b97f599470409ddf4d525b30d11c68a706a assets/projectex/models/item/colossal_star_drei.json
+525f051e33afefd09a0a441652880147fd8aba9b assets/projectex/models/item/colossal_star_ein.json
+a26f02888dbe07eb6cd1543514bb2cbb42952b60 assets/projectex/models/item/colossal_star_omega.json
+9baeb921054a5ed5ccdf28393e15b391c630d273 assets/projectex/models/item/colossal_star_sphere.json
+47c8ad187f7a983c81e761d2c32330c47f513f24 assets/projectex/models/item/colossal_star_vier.json
+8b9af00c2c32b5f337a5939c3f5e31e9a831ab88 assets/projectex/models/item/colossal_star_zwei.json
 dfe097fe5286cbf0a51a2acffec424b1ab1f2f64 assets/projectex/models/item/compressed_refined_link.json
 d63192efe239d212c4292c27b3a44d55f6a5f9b8 assets/projectex/models/item/cyan_collector.json
 d63192efe239d212c4292c27b3a44d55f6a5f9b8 assets/projectex/models/item/cyan_compressed_collector.json
@@ -29,6 +35,7 @@ c0af9b4d8f95ad593b8a851ad30642692316787e assets/projectex/models/item/fading_rel
 5555158ffcb6743d2fe5667e4fe7aee22cc5fb1c assets/projectex/models/item/final_compressed_collector.json
 599d124b33fba095ad8c0d87c8a12f7478df7ada assets/projectex/models/item/final_power_flower.json
 7f8fe653fca959559f2963841c99f9ee99ad6872 assets/projectex/models/item/final_relay.json
+f052d10ba436ae64194b7beac83c5dfd1e6cc58c assets/projectex/models/item/final_star.json
 d0249093c0c9ee8cc532dc4779f1cc3ea38441f0 assets/projectex/models/item/final_star_shard.json
 40f301055d54c28cb842b85736c57ec3b5619937 assets/projectex/models/item/green_collector.json
 40f301055d54c28cb842b85736c57ec3b5619937 assets/projectex/models/item/green_compressed_collector.json
@@ -45,6 +52,12 @@ a84049510620b9ead5688d007655b517edae38f4 assets/projectex/models/item/lime_power
 1d4a32d67aa749ed7f9d4d8e956780ee83384159 assets/projectex/models/item/magenta_matter.json
 4492e8cd1e9c99359ded0f8ecf15b9d58b788297 assets/projectex/models/item/magenta_power_flower.json
 ecf0e5bbfe68932aa43a7bc143bf344a21ddb7b8 assets/projectex/models/item/magenta_relay.json
+192cb14b5e8e3c322bd3be8713ba19b8ba75e698 assets/projectex/models/item/magnum_star_drei.json
+615bed34eff08884a1a23c1d78af9224330de134 assets/projectex/models/item/magnum_star_ein.json
+f0bda300cc7fbb54b0c3484b4ae856e800ad9f5f assets/projectex/models/item/magnum_star_omega.json
+9012162f95a57179e573ff6929d2ecb2ea404984 assets/projectex/models/item/magnum_star_sphere.json
+17bc06ee6a61721b39b5dec66263eb4e18988274 assets/projectex/models/item/magnum_star_vier.json
+2bf593e9411a8f18a6767e5a726c62ffd14b72e2 assets/projectex/models/item/magnum_star_zwei.json
 5c91d929b334ac780cdac8f064fd7ea0c9d1ed5f assets/projectex/models/item/orange_collector.json
 5c91d929b334ac780cdac8f064fd7ea0c9d1ed5f assets/projectex/models/item/orange_compressed_collector.json
 5feac11d63955af81ae44aa88e6aa7a20a070c6d assets/projectex/models/item/orange_matter.json

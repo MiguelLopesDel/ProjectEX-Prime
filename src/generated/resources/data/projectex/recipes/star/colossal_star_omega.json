@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "projectex:star",
+  "ingredients": [
+    {
+      "item": "projectex:colossal_star_sphere"
+    },
+    {
+      "item": "projectex:colossal_star_sphere"
+    },
+    {
+      "item": "projectex:colossal_star_sphere"
+    },
+    {
+      "item": "projectex:colossal_star_sphere"
+    }
+  ],
+  "result": {
+    "item": "projectex:colossal_star_omega"
+  }
+}

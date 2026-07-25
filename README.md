@@ -25,6 +25,8 @@ Ported so far:
 - The link screen, where you pick what each output slot produces
 - Stone Table, opening ProjectE's transmutation screen
 - Matter items, compressed collectors, final star shard, clay matter
+- EMC storage items: Magnum and Colossal Stars (12 tiers) and the Final Star, through
+  ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying
 - Assets and data generation: blockstates, models, translations, loot tables and
   recipes for everything above
 - In game guide, written for [GuideME](https://github.com/AppliedEnergistics/GuideME) and
@@ -35,10 +37,9 @@ Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 
 - **GUI layer**: Arcane Tablet and Alchemy Table, with their menus and screens
 - **Energy Link's EMC to Forge Energy conversion**
-- **EMC storage items**: Magnum and Colossal Stars, Final Star, Knowledge Sharing Book,
-  which need ProjectE's `IItemEmcHolder` capability instead of the old `IItemEmc`
+- **Knowledge Sharing Book**
 - **JEI integration**
-- **Recipes for the deferred items** (stars, final star, knowledge book, arcane tablet)
+- **Recipes for the deferred items** (knowledge book, arcane tablet)
 
 ## Requirements
 

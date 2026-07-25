@@ -4,8 +4,10 @@ import dev.miguellopesdel.projectex.Matter;
 import dev.miguellopesdel.projectex.ProjectEX;
 import dev.miguellopesdel.projectex.item.ProjectEXItems;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.RegistryObject;
 
 public class ProjectEXItemModels extends ItemModelProvider {
 	public ProjectEXItemModels(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -36,6 +38,15 @@ public class ProjectEXItemModels extends ItemModelProvider {
 
 		flatItem(ProjectEXItems.CLAY_MATTER.getId().getPath(), "item/matter/clay");
 		flatItem(ProjectEXItems.FINAL_STAR_SHARD.getId().getPath(), "item/final_star_shard");
+		flatItem(ProjectEXItems.FINAL_STAR.getId().getPath(), "item/final_star");
+
+		for (RegistryObject<Item> star : ProjectEXItems.MAGNUM_STAR) {
+			flatItem(star.getId().getPath(), "item/" + star.getId().getPath());
+		}
+
+		for (RegistryObject<Item> star : ProjectEXItems.COLOSSAL_STAR) {
+			flatItem(star.getId().getPath(), "item/" + star.getId().getPath());
+		}
 	}
 
 	private void blockItem(String name) {

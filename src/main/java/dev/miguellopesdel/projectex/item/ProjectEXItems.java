@@ -5,12 +5,15 @@ import dev.miguellopesdel.projectex.ProjectEX;
 import dev.miguellopesdel.projectex.block.ProjectEXBlocks;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,7 +43,38 @@ public final class ProjectEXItems {
 	public static final RegistryObject<Item> CLAY_MATTER = REGISTRY.register("clay_matter", () -> new Item(new Item.Properties()));
 	public static final RegistryObject<Item> FINAL_STAR_SHARD = REGISTRY.register("final_star_shard", () -> new Item(new Item.Properties().fireResistant()));
 
+	/**
+	 * The six tiers ProjectE names its Klein Stars after. The Magnum stars carry on from where the
+	 * Omega star stops, and the Colossal stars carry on from the Magnum Omega.
+	 */
+	private static final String[] STAR_TIERS = {"ein", "zwei", "drei", "vier", "sphere", "omega"};
+
+	/** Capacity of the first Magnum star. Every star after it holds four times the one before. */
+	private static final long FIRST_STAR_CAPACITY = 204_800_000L;
+
+	public static final List<RegistryObject<Item>> MAGNUM_STAR = stars("magnum_star", 0, Rarity.UNCOMMON, false);
+	public static final List<RegistryObject<Item>> COLOSSAL_STAR = stars("colossal_star", STAR_TIERS.length, Rarity.RARE, true);
+
+	public static final RegistryObject<Item> FINAL_STAR = REGISTRY.register("final_star",
+			() -> new ItemFinalStar(new Item.Properties().fireResistant().rarity(Rarity.EPIC)));
+
 	private ProjectEXItems() {
+	}
+
+	/**
+	 * Registers one star per tier, continuing the factor of four from {@code firstTier} steps
+	 * above the first Magnum star.
+	 */
+	private static List<RegistryObject<Item>> stars(String prefix, int firstTier, Rarity rarity, boolean foil) {
+		List<RegistryObject<Item>> stars = new ArrayList<>(STAR_TIERS.length);
+
+		for (int i = 0; i < STAR_TIERS.length; i++) {
+			long capacity = FIRST_STAR_CAPACITY << (2 * (firstTier + i));
+			stars.add(REGISTRY.register(prefix + "_" + STAR_TIERS[i],
+					() -> new ItemEmcStar(new Item.Properties().rarity(rarity), capacity, foil)));
+		}
+
+		return List.copyOf(stars);
 	}
 
 	private static RegistryObject<Item> blockItem(String name, Supplier<? extends Block> block) {

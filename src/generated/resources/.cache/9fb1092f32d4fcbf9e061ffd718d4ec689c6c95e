@@ -1,4 +1,4 @@
-// 1.20.1	2026-07-25T12:20:39.586454608	Recipes
+// 1.20.1	2026-07-25T19:28:41.71224479	Recipes
 8ddeb738c3c30504e06ab7b6081ccb187be06b05 data/projectex/advancements/recipes/misc/collector/blue.json
 94ae5e7e39fcad0009cd0755e590fc8266c903ce data/projectex/advancements/recipes/misc/collector/cyan.json
 49276a22a475631539a7b920adb9ef31dd753733 data/projectex/advancements/recipes/misc/collector/dark.json
@@ -32,6 +32,7 @@ c1d586dc114a890980a1d49f95b44ecdf9f5b3f0 data/projectex/advancements/recipes/mis
 943a2f026fbdcd10660630a93d086af65393c060 data/projectex/advancements/recipes/misc/compressed_collector/yellow.json
 215789080abb13bd0bb686669f0adc63b597724c data/projectex/advancements/recipes/misc/compressed_refined_link.json
 5a33a81d0adf985937980e299f9df9c04542ab4d data/projectex/advancements/recipes/misc/energy_link.json
+1baf67d3ba37b24cc8583ce4a62bbc4ebfe0458a data/projectex/advancements/recipes/misc/final_star.json
 5a1a2f93481484455994d833edffe567b4c35ae1 data/projectex/advancements/recipes/misc/matter/blue_h.json
 94adb026d36d9cd03b221264f5f90b7c825f82ce data/projectex/advancements/recipes/misc/matter/blue_v.json
 1147c8db284e0795e211b24699608a3714638dee data/projectex/advancements/recipes/misc/matter/cyan_h.json
@@ -89,6 +90,18 @@ ccfc3c7d36f220a9c9176d543d0ddc600b6c098c data/projectex/advancements/recipes/mis
 dd81c52c7843088833ed4d25bf02346b3d60bfb6 data/projectex/advancements/recipes/misc/relay/violet.json
 b9c2bb446e0bf1e889fa5d76835385891cf9c001 data/projectex/advancements/recipes/misc/relay/white.json
 3be0d3bad57d4b144d5fd5ff580a20fa4d195cb2 data/projectex/advancements/recipes/misc/relay/yellow.json
+ed55f167a891cbd17c25ba78216656a1d99c8ebe data/projectex/advancements/recipes/misc/star/colossal_star_drei.json
+6768806cbb93661b00ac27904700fd2eeecc9ecf data/projectex/advancements/recipes/misc/star/colossal_star_ein.json
+c046e630455467faadf134471f83688ad76fba0a data/projectex/advancements/recipes/misc/star/colossal_star_omega.json
+baa6ff55b9731c556e24b639d069a28b0b7b43e8 data/projectex/advancements/recipes/misc/star/colossal_star_sphere.json
+9f09c01c54a668f44da24771d0b53a8ca984aab4 data/projectex/advancements/recipes/misc/star/colossal_star_vier.json
+9447cb64c5617d5421ffcafa35b9fdca90d68135 data/projectex/advancements/recipes/misc/star/colossal_star_zwei.json
+ba031734ed1d1259ec15667e7c2af706d12da144 data/projectex/advancements/recipes/misc/star/magnum_star_drei.json
+a1c2e24ff65bcbb27f8c03818a50e01f01b53d55 data/projectex/advancements/recipes/misc/star/magnum_star_ein.json
+ea21b3aed0b2dbb4d95c2984c172674b41600fbf data/projectex/advancements/recipes/misc/star/magnum_star_omega.json
+e1bbd26ae66ae1fd0e3330fd50482d2ee56d00f2 data/projectex/advancements/recipes/misc/star/magnum_star_sphere.json
+57b00ab059a4e68c1df99a673b7d42b70d332bac data/projectex/advancements/recipes/misc/star/magnum_star_vier.json
+d87cc1a3bee708dcd7842297ac58fb22633f696d data/projectex/advancements/recipes/misc/star/magnum_star_zwei.json
 89a83767161dbd6c1b30c3bcfac95e16e0b3f352 data/projectex/advancements/recipes/misc/stone_table.json
 2e34627635e6c6b5241181160155aee533678cbb data/projectex/recipes/collector/blue.json
 fe4a382b3da61bdc1627c497c6bbeeddeb82502f data/projectex/recipes/collector/cyan.json
@@ -123,6 +136,7 @@ bdf0a6a2529b7b55c64afd91c0f87a035b7f8004 data/projectex/recipes/compressed_colle
 d6dea413101bfa3ae5b430d83e449ef54daa90fd data/projectex/recipes/compressed_collector/yellow.json
 1cf7e087279dee9cb36d685ed469f493afb77910 data/projectex/recipes/compressed_refined_link.json
 10ed877e0c797d5a412b73917467c9a647905f35 data/projectex/recipes/energy_link.json
+f41dae3ea564719411be4aa7cfd26c8595b2adaa data/projectex/recipes/final_star.json
 830663b22f822469d95ee2e40d3f78e95468b7f1 data/projectex/recipes/matter/blue_h.json
 6c3eef950679ebeb6560be25a6c71c12ec249028 data/projectex/recipes/matter/blue_v.json
 3088b7cd948d6194df9e10282722888b6027f951 data/projectex/recipes/matter/cyan_h.json
@@ -180,4 +194,16 @@ cd8671f45b05f7da67cc352373fd19a519b93433 data/projectex/recipes/relay/red.json
 576c1c9dfb0967051453192dfdfc070cac9a1dc2 data/projectex/recipes/relay/violet.json
 564c55bc2ba5f5c32c447eab5828e98396e8105e data/projectex/recipes/relay/white.json
 7b047c463bfc28410db3d7d1260faddb95adae01 data/projectex/recipes/relay/yellow.json
+17ac3c46b58dab949e7f95cd66ab8f36992a32c0 data/projectex/recipes/star/colossal_star_drei.json
+41e8cd7a95f7a5442715fb6122622d3ed5914be3 data/projectex/recipes/star/colossal_star_ein.json
+0bf76914c442ea9d1c04404dc0571bbe403e5447 data/projectex/recipes/star/colossal_star_omega.json
+93ccc2276a43b978e02c459153918fc555d5df62 data/projectex/recipes/star/colossal_star_sphere.json
+f40e3523496efc4600c3b41989f09e9f6e731d98 data/projectex/recipes/star/colossal_star_vier.json
+97a271d2ae48c4be1211f6858dbd9bf0833de11d data/projectex/recipes/star/colossal_star_zwei.json
+3ffc6155d6ec07c12cc335d50f4dae7d9a51261a data/projectex/recipes/star/magnum_star_drei.json
+7ddd493f9af0bfcea308a9563499d533161269b8 data/projectex/recipes/star/magnum_star_ein.json
+10bd2141c30190cea1e6b1dfd448dd5c0e993e4d data/projectex/recipes/star/magnum_star_omega.json
+3f33d4302c3ca7f2bc256a0df665bf1b23b11730 data/projectex/recipes/star/magnum_star_sphere.json
+c0de7186a9895ed55d98b466b2d82bf08d0c5333 data/projectex/recipes/star/magnum_star_vier.json
+946b5a3b15197ee857b43cb766bd7ec8fd39bee7 data/projectex/recipes/star/magnum_star_zwei.json
 e0dda4e38707bf1adce4cc4768c06c3894bb8028 data/projectex/recipes/stone_table.json

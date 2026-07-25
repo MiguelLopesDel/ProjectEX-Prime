@@ -53,6 +53,17 @@ public class ProjectEXLanguage extends LanguageProvider {
 
 		addItem(ProjectEXItems.CLAY_MATTER, "Clay Matter");
 		addItem(ProjectEXItems.FINAL_STAR_SHARD, "Final Star Shard");
+		addItem(ProjectEXItems.FINAL_STAR, "Final Star");
+
+		// ProjectE writes its own Klein Star tiers this way, and these continue that ladder.
+		String[] starNames = {"Ein", "Zwei", "Drei", "Vier", "Sphere", "Omega"};
+
+		for (int i = 0; i < starNames.length; i++) {
+			addItem(ProjectEXItems.MAGNUM_STAR.get(i), "Magnum Star " + starNames[i]);
+			addItem(ProjectEXItems.COLOSSAL_STAR.get(i), "Colossal Star " + starNames[i]);
+		}
+
+		add("item.projectex.final_star.pedestal", "Copies items dropped on the pedestal into an adjacent inventory");
 
 		add("block.projectex.energy_link.tooltip", "You can use this block to add EMC to your Transmutation Table using Collectors.");
 		add("block.projectex.personal_link.tooltip", "Same as Basic Energy EMC Link, but also allows to import and export items.");

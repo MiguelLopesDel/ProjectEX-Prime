@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:star",
+  "key": {
+    "E": {
+      "item": "minecraft:dragon_egg"
+    },
+    "F": {
+      "item": "projectex:final_power_flower"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "FEF",
+    "FFF"
+  ],
+  "result": {
+    "item": "projectex:final_star"
+  },
+  "show_notification": true
+}

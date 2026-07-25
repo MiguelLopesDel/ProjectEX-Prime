@@ -18,7 +18,9 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -36,6 +38,41 @@ public class ProjectEXRecipes extends RecipeProvider {
 		stoneTable(consumer);
 		matter(consumer);
 		machines(consumer);
+		stars(consumer);
+	}
+
+	/**
+	 * Every star is four of the star below it, so the ladder is one loop: the first Magnum is
+	 * four of ProjectE's Omega Klein Stars, and the first Colossal is four Magnum Omegas.
+	 */
+	private void stars(Consumer<FinishedRecipe> consumer) {
+		Item previous = PEItems.KLEIN_STAR_OMEGA.get();
+
+		for (List<RegistryObject<Item>> ladder : List.of(ProjectEXItems.MAGNUM_STAR, ProjectEXItems.COLOSSAL_STAR)) {
+			for (RegistryObject<Item> star : ladder) {
+				Item result = star.get();
+				Item ingredient = previous;
+
+				ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, result)
+						.requires(ingredient, 4)
+						.group("projectex:star")
+						.unlockedBy("has_previous_star", has(ingredient))
+						.save(consumer, id("star/" + star.getId().getPath()));
+
+				previous = result;
+			}
+		}
+
+		// Eight of the last power flower there is, around a dragon egg.
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXItems.FINAL_STAR.get())
+				.pattern("FFF")
+				.pattern("FEF")
+				.pattern("FFF")
+				.define('F', ProjectEXBlocks.POWER_FLOWER.get(Matter.FINAL).get())
+				.define('E', Items.DRAGON_EGG)
+				.group("projectex:star")
+				.unlockedBy("has_final_power_flower", has(ProjectEXBlocks.POWER_FLOWER.get(Matter.FINAL).get()))
+				.save(consumer);
 	}
 
 	private void links(Consumer<FinishedRecipe> consumer) {
