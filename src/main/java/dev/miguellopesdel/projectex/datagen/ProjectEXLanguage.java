@@ -26,6 +26,10 @@ public class ProjectEXLanguage extends LanguageProvider {
 	protected void addTranslations() {
 		add("itemGroup." + ProjectEX.MOD_ID, "ProjectEX");
 
+		// Names the guide book that GuideME hands out for this mod's guide.
+		add("projectex.guide_name", "ProjectEX Guide");
+		add("projectex.guide_tooltip", "Collectors, relays, power flowers and EMC links");
+
 		for (Matter matter : Matter.VALUES) {
 			String name = DISPLAY_NAMES[matter.ordinal()];
 			// The final tier has no MK number, the other fifteen are MK1 to MK15.

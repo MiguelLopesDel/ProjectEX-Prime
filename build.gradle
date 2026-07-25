@@ -27,6 +27,9 @@ repositories {
         url = 'https://modmaven.dev'
         content { includeGroup 'mezz.jei' }
     }
+    mavenCentral {
+        content { includeGroup 'org.appliedenergistics' }
+    }
 }
 
 legacyForge {
@@ -88,6 +91,15 @@ dependencies {
     modCompileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     modCompileOnly "mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}"
     modLocalRuntime "mezz.jei:jei-${minecraft_version}-forge:${jei_version}"
+
+    // GuideME draws the in game guide. The guide itself is data driven, so nothing is compiled
+    // against it: the dev run needs the mod present, and the release jar carries it inside.
+    //
+    // It comes from Maven Central rather than from Modrinth so that the jar embedded here is
+    // identified the same way any other mod would identify it, which is what lets Forge pick a
+    // single copy instead of loading two.
+    modLocalRuntime "org.appliedenergistics:guideme:${guideme_version}"
+    jarJar "org.appliedenergistics:guideme:${guideme_version}"
 }
 
 // Expands ${} properties from gradle.properties into src/main/templates,

@@ -93,5 +93,7 @@
   "item.projectex.white_matter": "White Matter",
   "item.projectex.yellow_compressed_collector": "Compressed Yellow Matter Collector [MK12]",
   "item.projectex.yellow_matter": "Yellow Matter",
-  "itemGroup.projectex": "ProjectEX"
+  "itemGroup.projectex": "ProjectEX",
+  "projectex.guide_name": "ProjectEX Guide",
+  "projectex.guide_tooltip": "Collectors, relays, power flowers and EMC links"
 }

@@ -27,6 +27,8 @@ Ported so far:
 - Matter items, compressed collectors, final star shard, clay matter
 - Assets and data generation: blockstates, models, translations, loot tables and
   recipes for everything above
+- In game guide, written for [GuideME](https://github.com/AppliedEnergistics/GuideME) and
+  covering collectors, relays, power flowers, the EMC links and the tier ladder
 
 Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 `742a85c` and can be pulled back out with `git show 742a85c:<path>`:
@@ -44,6 +46,11 @@ Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 - Forge 47+
 - [ProjectE](https://www.curseforge.com/minecraft/mc-mods/projecte) 1.20.1 (PE1.0.1 or newer)
 - JEI 15 (optional)
+
+[GuideME](https://github.com/AppliedEnergistics/GuideME) 20.1.15 is required as well, but it
+ships inside this mod's jar, so there is nothing extra to download. It is redistributed
+unmodified and is licensed under the LGPL-3.0, the same license as this mod. If a newer copy is
+present in the instance, Forge loads that one instead of the bundled jar.
 
 ## Attribution and license
 
