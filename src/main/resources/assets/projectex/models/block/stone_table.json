@@ -2,9 +2,9 @@
 	"parent": "block/block",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "projectex:blocks/stone_table_side",
-		"1": "projectex:blocks/stone_table_top",
-		"particle": "projectex:blocks/stone_table_top"
+		"0": "projectex:block/stone_table_side",
+		"1": "projectex:block/stone_table_top",
+		"particle": "projectex:block/stone_table_top"
 	},
 	"elements": [
 		{

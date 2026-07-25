@@ -1,0 +1,6 @@
+{
+  "parent": "projectex:block/collector",
+  "textures": {
+    "texture": "projectex:block/collector/pink"
+  }
+}

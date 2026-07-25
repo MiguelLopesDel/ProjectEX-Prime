@@ -3,11 +3,11 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "minecraft:blocks/piston_top_normal",
-		"1": "projectex:blocks/stone_table_top",
+		"1": "projectex:block/stone_table_top",
 		"2": "minecraft:blocks/sandstone_top",
 		"3": "minecraft:blocks/wool_colored_black",
-		"5": "projectex:blocks/stone_table_side",
-		"particle": "projectex:blocks/stone_table_top"
+		"5": "projectex:block/stone_table_side",
+		"particle": "projectex:block/stone_table_top"
 	},
 	"elements": [
 		{

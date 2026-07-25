@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:power_flower",
+  "key": {
+    "C": {
+      "item": "projectex:dark_compressed_collector"
+    },
+    "E": {
+      "item": "projectex:energy_link"
+    },
+    "R": {
+      "item": "projectex:dark_relay"
+    }
+  },
+  "pattern": [
+    "CEC",
+    "RRR",
+    "RRR"
+  ],
+  "result": {
+    "item": "projectex:dark_power_flower"
+  },
+  "show_notification": true
+}

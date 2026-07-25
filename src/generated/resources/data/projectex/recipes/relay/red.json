@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "projectex:relay",
+  "ingredients": [
+    {
+      "item": "projectex:dark_relay"
+    },
+    {
+      "item": "projecte:red_matter"
+    }
+  ],
+  "result": {
+    "item": "projectex:red_relay"
+  }
+}

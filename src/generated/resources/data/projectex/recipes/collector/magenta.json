@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "projectex:collector",
+  "ingredients": [
+    {
+      "item": "projectex:red_collector"
+    },
+    {
+      "item": "projectex:magenta_matter"
+    }
+  ],
+  "result": {
+    "item": "projectex:magenta_collector"
+  }
+}

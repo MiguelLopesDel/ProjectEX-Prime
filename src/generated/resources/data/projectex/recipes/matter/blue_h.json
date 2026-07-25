@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:matter",
+  "key": {
+    "F": {
+      "item": "projecte:aeternalis_fuel"
+    },
+    "M": {
+      "item": "projectex:violet_matter"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "MMM",
+    "FFF"
+  ],
+  "result": {
+    "item": "projectex:blue_matter"
+  },
+  "show_notification": true
+}

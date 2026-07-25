@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "projectex:collector",
+  "ingredients": [
+    {
+      "item": "projectex:white_collector"
+    },
+    {
+      "item": "projectex:fading_matter"
+    }
+  ],
+  "result": {
+    "item": "projectex:fading_collector"
+  }
+}
