@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex.blockentity;
 
 import moze_intel.projecte.api.proxy.IEMCProxy;
+import moze_intel.projecte.utils.EMCHelper;
 import java.math.BigInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -46,6 +47,14 @@ public class TileLink extends EmcStorageBlockEntity {
 		return EmcAccount.of(level, ownerBuffer.owner);
 	}
 
+	/**
+	 * Whether eating an item also teaches it to the owner. Only the refined links do, which is
+	 * what separates them from the personal link.
+	 */
+	protected boolean learnsItems() {
+		return false;
+	}
+
 	public void setOwner(LivingEntity entity) {
 		ownerBuffer.setOwner(entity);
 		setChanged();
@@ -61,9 +70,12 @@ public class TileLink extends EmcStorageBlockEntity {
 	}
 
 	/**
-	 * Eats whatever was fed into the input slots, paying its EMC to the owner and teaching it to
-	 * them. When the owner is offline the EMC waits in the buffer, but the item is still eaten,
-	 * so an automated feed never backs up.
+	 * Eats whatever was fed into the input slots and pays for it. What it pays is the item's
+	 * sell value, so ProjectE's covalence loss setting applies here as it does to a transmutation
+	 * table; paying the full value would make a link a way around a pack's economy.
+	 *
+	 * <p>When the owner is offline the EMC waits in the buffer, but the item is still eaten, so
+	 * an automated feed never backs up.
 	 */
 	private void consumeInputs() {
 		EmcAccount account = account();
@@ -75,14 +87,17 @@ public class TileLink extends EmcStorageBlockEntity {
 				continue;
 			}
 
-			long value = IEMCProxy.INSTANCE.getValue(stack);
+			long value = EMCHelper.getEmcSellValue(stack);
 
 			if (value <= 0L) {
 				continue;
 			}
 
 			if (account != null) {
-				account.learn(stack);
+				if (learnsItems()) {
+					account.learn(stack);
+				}
+
 				account.deposit(BigInteger.valueOf(value).multiply(BigInteger.valueOf(stack.getCount())));
 			} else {
 				ownerBuffer.add(value * stack.getCount());
