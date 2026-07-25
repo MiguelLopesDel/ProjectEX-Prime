@@ -21,13 +21,12 @@ Ported so far:
 - EMC links (energy, personal, refined, compressed refined) as EMC-to-owner blocks
 - Stone Table, opening ProjectE's transmutation screen
 - Matter items, compressed collectors, final star shard, clay matter
+- Assets and data generation: blockstates, models, translations, loot tables and
+  recipes for everything above
 
 Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 `742a85c` and can be pulled back out with `git show 742a85c:<path>`:
 
-- **Models, blockstates and translations.** Block metadata became 48 separate blocks, so the
-  old assets no longer apply and the data generators have to be rewritten. Until then the new
-  blocks render untextured in game.
 - **GUI layer**: Arcane Tablet, Alchemy Table and the link interfaces, with their menus,
   screens and the four network packets
 - **Item output from links**, which lives in those menus
@@ -35,7 +34,7 @@ Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 - **EMC storage items**: Magnum and Colossal Stars, Final Star, Knowledge Sharing Book,
   which need ProjectE's `IItemEmcHolder` capability instead of the old `IItemEmc`
 - **JEI integration**
-- **Recipes**, which were registered in code in 1.12 and are data driven now
+- **Recipes for the deferred items** (stars, final star, knowledge book, arcane tablet)
 
 ## Requirements
 
