@@ -3,7 +3,6 @@ package dev.miguellopesdel.projectex.gui;
 import dev.miguellopesdel.projectex.ProjectEX;
 import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.client.EnumSearchType;
-import moze_intel.projecte.utils.TransmutationEMCFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
@@ -49,12 +48,7 @@ public class GuiArcaneTablet extends GuiTableBase<ContainerArcaneTablet> {
 	protected void addButtons() {
 		addPageButtons(leftPos + 7, topPos + 20, leftPos + 151, topPos + 20, 196, 215);
 
-		// Shift over the burn slot charges or drains what is on the cursor instead of selling it.
-		addRenderableWidget(new WidgetTableButton(leftPos + 80, topPos + 68, 16, 16, translate("burn"),
-				() -> send(hasShiftDown() ? ContainerTableBase.BURN_ALT : ContainerTableBase.BURN, null)));
-
-		addActionButton(leftPos + 8, topPos + 115, 16, 16, translate("learn"), ContainerTableBase.LEARN);
-		addActionButton(leftPos + 152, topPos + 115, 16, 16, translate("unlearn"), ContainerTableBase.UNLEARN);
+		addPanelButtons(leftPos + 80, topPos + 68, leftPos + 8, topPos + 115, leftPos + 152, topPos + 115);
 
 		for (int[] position : RING) {
 			addItemButton(leftPos + position[0], topPos + position[1]);
@@ -93,14 +87,6 @@ public class GuiArcaneTablet extends GuiTableBase<ContainerArcaneTablet> {
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		super.renderBg(graphics, partialTick, mouseX, mouseY);
 		graphics.blit(TEXTURE, leftPos + PANEL_X, topPos + PANEL_Y, 180, 19, PANEL_WIDTH, PANEL_HEIGHT, 256, 256);
-	}
-
-	@Override
-	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
-		// The balance goes above the screen rather than inside it: there is no room anywhere in the
-		// ring, and it belongs to the player rather than to this tablet.
-		String balance = TransmutationEMCFormatter.formatEMC(menu.knowledge.getEmc()).getString();
-		graphics.drawString(font, balance, (imageWidth - font.width(balance)) / 2, -9, 0xB5B5B5, true);
 	}
 
 	@Override

@@ -15,7 +15,9 @@ Ported so far:
 - Build system: ModDevGradle legacy, Forge 47.4.10, Java 17
 - Registries: `DeferredRegister` for blocks, items, block entities and the creative tab
 - Config: `ForgeConfigSpec`, including the per-tier EMC values and the stone table whitelist,
-  whose ore dictionary entries became item tags
+  whose ore dictionary entries became item tags. 1.12's `blacklist_power_flower_from_watch` is
+  gone: ProjectE reads what the Watch of Flowing Time skips from the
+  `projecte:blacklist/time_watch` tag now, and power flowers are added to it
 - Collectors, relays and power flowers, all 16 tiers, generating and moving EMC through
   ProjectE's `IEmcStorage` capability
 - EMC links (energy, personal, refined, compressed refined): EMC and items both go to the
@@ -23,7 +25,9 @@ Ported so far:
   networks drive them with no interface involved. They keep producing while their owner is
   offline, by spending from the balance in that player's save file
 - The link screen, where you pick what each output slot produces
-- Stone Table, opening ProjectE's transmutation screen
+- Stone Table, with its own transmutation panel so that the whitelist a pack can put on it
+  actually restricts what it handles
+- On screen EMC counter, with the rate it is moving at, placed by config
 - Matter items, compressed collectors, final star shard, clay matter
 - EMC storage items: Magnum and Colossal Stars (12 tiers) and the Final Star, through
   ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying and the EMC

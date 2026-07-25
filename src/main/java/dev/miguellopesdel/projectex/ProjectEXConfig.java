@@ -47,7 +47,6 @@ public final class ProjectEXConfig {
 	}
 
 	public static class Common {
-		public final ForgeConfigSpec.BooleanValue blacklistPowerFlowerFromWatch;
 		public final ForgeConfigSpec.BooleanValue finalStarCopyAnyItem;
 		public final ForgeConfigSpec.BooleanValue finalStarCopyNbt;
 		public final ForgeConfigSpec.IntValue finalStarUpdateInterval;
@@ -60,9 +59,9 @@ public final class ProjectEXConfig {
 		private Common(ForgeConfigSpec.Builder builder) {
 			builder.push("general");
 
-			blacklistPowerFlowerFromWatch = builder
-					.comment("With this enabled, Power Flowers will not be affected by the Watch of Flowing Time.")
-					.define("blacklist_power_flower_from_watch", true);
+			// 1.12's blacklist_power_flower_from_watch lived here. ProjectE reads what the Watch of
+			// Flowing Time skips from the projecte:blacklist/time_watch tag now, so power flowers
+			// are added to that tag instead and a pack changes the tag rather than a config value.
 
 			finalStarCopyAnyItem = builder
 					.comment("If set to false, the Final Star will only copy items that have an EMC value.")

@@ -1,7 +1,6 @@
 package dev.miguellopesdel.projectex.block;
 
-import moze_intel.projecte.gameObjs.container.TransmutationContainer;
-import moze_intel.projecte.utils.text.PELang;
+import dev.miguellopesdel.projectex.gui.ContainerStoneTable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -9,10 +8,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -69,7 +66,9 @@ public class BlockStoneTable extends Block {
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-			NetworkHooks.openScreen(serverPlayer, new TransmutationMenuProvider(), buffer -> buffer.writeEnum(InteractionHand.OFF_HAND));
+			NetworkHooks.openScreen(serverPlayer, new SimpleMenuProvider(
+					(windowId, inventory, opener) -> new ContainerStoneTable(windowId, inventory, pos),
+					Component.translatable(getDescriptionId())), buffer -> buffer.writeBlockPos(pos));
 		}
 
 		return InteractionResult.sidedSuccess(level.isClientSide());
@@ -81,15 +80,4 @@ public class BlockStoneTable extends Block {
 		list.add(Component.translatable("block.projectex.stone_table.tooltip").withStyle(ChatFormatting.GRAY));
 	}
 
-	private static class TransmutationMenuProvider implements MenuProvider {
-		@Override
-		public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
-			return new TransmutationContainer(windowId, playerInventory);
-		}
-
-		@Override
-		public Component getDisplayName() {
-			return PELang.TRANSMUTATION_TRANSMUTE.translate();
-		}
-	}
 }

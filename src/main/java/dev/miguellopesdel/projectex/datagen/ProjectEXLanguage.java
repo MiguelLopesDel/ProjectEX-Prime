@@ -67,10 +67,14 @@ public class ProjectEXLanguage extends LanguageProvider {
 
 		add("item.projectex.final_star.pedestal", "Copies items dropped on the pedestal into an adjacent inventory");
 
-		// The transmutation panel and the tablet's crafting helpers.
-		add("gui.projectex.arcane_tablet.burn", "Sell what you are holding. Shift: fill or empty an EMC item");
-		add("gui.projectex.arcane_tablet.learn", "Learn");
-		add("gui.projectex.arcane_tablet.unlearn", "Unlearn");
+		// Shared by every transmutation panel.
+		add("gui.projectex.table.burn", "Sell what you are holding. Shift: fill or empty an EMC item");
+		add("gui.projectex.table.learn", "Learn");
+		add("gui.projectex.table.unlearn", "Unlearn");
+
+		add("gui.projectex.stone_table.cant_use", "This table does not handle this item");
+
+		// The tablet's crafting helpers.
 		add("gui.projectex.arcane_tablet.rotate", "Rotate. Shift: anticlockwise");
 		add("gui.projectex.arcane_tablet.balance", "Balance. Shift: spread");
 		add("gui.projectex.arcane_tablet.clear", "Clear");

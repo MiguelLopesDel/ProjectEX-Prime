@@ -6,6 +6,7 @@ import dev.miguellopesdel.projectex.net.PacketTableAction;
 import dev.miguellopesdel.projectex.net.ProjectEXNetwork;
 import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.utils.EMCHelper;
+import moze_intel.projecte.utils.TransmutationEMCFormatter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -98,6 +99,21 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 
 	protected WidgetTableButton addActionButton(int x, int y, int width, int height, @Nullable Component tooltip, int mode) {
 		return addRenderableWidget(new WidgetTableButton(x, y, width, height, tooltip, () -> send(mode, null)));
+	}
+
+	/** Labels of the buttons every transmutation panel has, wherever the screen puts them. */
+	protected static Component tableText(String name) {
+		return Component.translatable("gui.projectex.table." + name);
+	}
+
+	/** The burn slot, and the learn and unlearn buttons, which sit differently on each screen. */
+	protected void addPanelButtons(int burnX, int burnY, int learnX, int learnY, int unlearnX, int unlearnY) {
+		// Shift over the burn slot charges or drains what is on the cursor instead of selling it.
+		addRenderableWidget(new WidgetTableButton(burnX, burnY, 16, 16, tableText("burn"),
+				() -> send(hasShiftDown() ? ContainerTableBase.BURN_ALT : ContainerTableBase.BURN, null)));
+
+		addActionButton(learnX, learnY, 16, 16, tableText("learn"), ContainerTableBase.LEARN);
+		addActionButton(unlearnX, unlearnY, 16, 16, tableText("unlearn"), ContainerTableBase.UNLEARN);
 	}
 
 	protected void send(int mode, @Nullable ItemInfo type) {
@@ -263,6 +279,14 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 	@Override
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		graphics.blit(texture(), leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
+	}
+
+	@Override
+	protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+		// The balance goes above the screen rather than inside it: the ring leaves no room, and it
+		// belongs to the player rather than to whatever they opened.
+		String balance = TransmutationEMCFormatter.formatEMC(menu.knowledge.getEmc()).getString();
+		graphics.drawString(font, balance, (imageWidth - font.width(balance)) / 2, -9, 0xB5B5B5, true);
 	}
 
 	@Override

@@ -22,5 +22,6 @@ public final class ProjectEXDataGen {
 		generator.addProvider(event.includeClient(), new ProjectEXLanguage(output));
 		generator.addProvider(event.includeServer(), new ProjectEXLootTables(output));
 		generator.addProvider(event.includeServer(), new ProjectEXRecipes(output));
+		generator.addProvider(event.includeServer(), new ProjectEXBlockEntityTypeTags(output, event.getLookupProvider(), event.getExistingFileHelper()));
 	}
 }
