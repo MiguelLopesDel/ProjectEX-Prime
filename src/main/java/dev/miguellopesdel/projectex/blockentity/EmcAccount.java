@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import moze_intel.projecte.api.capabilities.PECapabilities;
 import net.minecraft.Util;
@@ -28,7 +29,12 @@ public interface EmcAccount {
 	void deposit(BigInteger amount);
 
 	/** Teaches the owner an item, so that what a link eats becomes transmutable. */
-	void learn(ItemStack stack);
+	void learn(ItemInfo item);
+
+	/** Teaches an item as EMC stores it, never as the stack that happened to arrive. */
+	default void learn(ItemStack stack) {
+		learn(PersistentItems.infoOf(stack));
+	}
 
 	@Nullable
 	static EmcAccount of(Level level, UUID owner) {
@@ -73,16 +79,17 @@ public interface EmcAccount {
 		}
 
 		@Override
-		public void learn(ItemStack stack) {
-			if (provider.addKnowledge(stack)) {
+		public void learn(ItemInfo item) {
+			if (provider.addKnowledge(item)) {
 				provider.sync(player);
 			}
 		}
 	}
 
 	/**
-	 * The owner is away, so their balance is edited in their save file. Every operation costs
-	 * disk access, which is why the links only produce on their one second beat and not per tick.
+	 * The owner is away, so their balance is edited in their save file. Changes land in memory
+	 * and are written once a tick, so a fast pipe pulling from a link does not turn into a disk
+	 * write per item.
 	 */
 	record OfflineAccount(MinecraftServer server, UUID owner) implements EmcAccount {
 		@Override
@@ -107,8 +114,8 @@ public interface EmcAccount {
 		}
 
 		@Override
-		public void learn(ItemStack stack) {
-			OfflineEmcStore.learn(server, owner, stack);
+		public void learn(ItemInfo item) {
+			OfflineEmcStore.learn(server, owner, item);
 		}
 	}
 }

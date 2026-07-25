@@ -1,17 +1,24 @@
 package dev.miguellopesdel.projectex.gui;
 
-import dev.miguellopesdel.projectex.blockentity.EmcAccount;
 import dev.miguellopesdel.projectex.blockentity.LinkItemHandler;
 import dev.miguellopesdel.projectex.blockentity.TileLink;
+import moze_intel.projecte.api.ItemInfo;
+import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
+import moze_intel.projecte.api.capabilities.PECapabilities;
+import moze_intel.projecte.api.event.PlayerAttemptCondenserSetEvent;
+import moze_intel.projecte.api.event.PlayerAttemptLearnEvent;
 import moze_intel.projecte.api.proxy.IEMCProxy;
+import moze_intel.projecte.emc.nbt.NBTManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.SlotItemHandler;
 
 /**
@@ -72,21 +79,11 @@ public class ContainerLink extends AbstractContainerMenu {
 	public void clicked(int slotId, int button, ClickType clickType, Player player) {
 		// Holding an item over an output slot picks what that slot makes, rather than trying to
 		// put the item in a slot that only ever hands items out.
-		if (slotId >= firstOutputSlot && slotId < firstOutputSlot + (items.getSlots() - items.inputCount())) {
+		if (slotId >= firstOutputSlot && slotId < firstOutputSlot + items.outputCount()) {
 			ItemStack carried = getCarried();
 
 			if (!carried.isEmpty()) {
-				if (IEMCProxy.INSTANCE.hasValue(carried)) {
-					items.setTemplate(slotId - firstOutputSlot, carried);
-
-					// Setting a template teaches the item, so it can be produced from EMC alone.
-					EmcAccount account = link.account();
-
-					if (account != null) {
-						account.learn(carried);
-					}
-				}
-
+				setTemplate(player, slotId - firstOutputSlot, carried);
 				return;
 			}
 
@@ -99,6 +96,48 @@ public class ContainerLink extends AbstractContainerMenu {
 		}
 
 		super.clicked(slotId, button, clickType, player);
+	}
+
+	/**
+	 * Picks what an output slot makes, and teaches the item while doing so.
+	 *
+	 * <p>The stack is first reduced to what EMC actually knows about, through the same processors
+	 * ProjectE prices it with. Otherwise a damaged or tagged item could become the template and
+	 * then come back out of the link with all of it intact, for the price of the plain item.
+	 *
+	 * <p>Both of ProjectE's veto events get a say, so a pack that stops an item being learned or
+	 * being locked into a condenser stops it here too. Unlike 1.12, an item the player is not
+	 * allowed to learn cannot be set either: setting it anyway left the link producing exactly
+	 * what the pack had just refused to teach.
+	 */
+	private void setTemplate(Player player, int index, ItemStack carried) {
+		// Knowledge lives on the server, and it sends the template back to the screen.
+		if (player.level().isClientSide() || !IEMCProxy.INSTANCE.hasValue(carried)) {
+			return;
+		}
+
+		IKnowledgeProvider knowledge = player.getCapability(PECapabilities.KNOWLEDGE_CAPABILITY).orElse(null);
+
+		if (knowledge == null) {
+			return;
+		}
+
+		ItemInfo source = ItemInfo.fromStack(carried);
+		ItemInfo reduced = NBTManager.getPersistentInfo(source);
+
+		if (!knowledge.hasKnowledge(reduced)) {
+			if (MinecraftForge.EVENT_BUS.post(new PlayerAttemptLearnEvent(player, source, reduced))) {
+				return;
+			}
+
+			if (knowledge.addKnowledge(reduced) && player instanceof ServerPlayer serverPlayer) {
+				knowledge.sync(serverPlayer);
+			}
+		}
+
+		if (!MinecraftForge.EVENT_BUS.post(new PlayerAttemptCondenserSetEvent(player, source, reduced))) {
+			items.setTemplate(index, reduced.createStack());
+		}
 	}
 
 	@Override
