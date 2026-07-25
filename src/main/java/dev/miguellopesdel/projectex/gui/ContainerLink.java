@@ -109,18 +109,34 @@ public class ContainerLink extends AbstractContainerMenu {
 			return ItemStack.EMPTY;
 		}
 
-		ItemStack stack = slot.getItem();
 		int inventoryStart = items.getSlots();
 
-		if (index < inventoryStart) {
-			// Out of the link and into the player, which for an output slot spends EMC.
-			if (!moveItemStackTo(stack, inventoryStart, slots.size(), true)) {
-				return ItemStack.EMPTY;
-			}
-
-			slot.onTake(player, stack);
-		} else if (!moveItemStackTo(stack, 0, items.inputCount(), false)) {
+		if (index >= inventoryStart) {
+			moveItemStackTo(slot.getItem(), 0, items.inputCount(), false);
 			return ItemStack.EMPTY;
+		}
+
+		// Vanilla's shift click moves items by mutating the stack a slot hands back, which only
+		// works when that stack is the one the inventory stores. An output slot computes its
+		// stack from the owner's balance every time it is asked, so mutating it moves nothing
+		// and charges nothing. Extraction has to be asked for explicitly instead.
+		ItemStack available = items.extractItem(index, slot.getItem().getMaxStackSize(), true);
+
+		if (available.isEmpty()) {
+			return ItemStack.EMPTY;
+		}
+
+		ItemStack remainder = available.copy();
+
+		if (!moveItemStackTo(remainder, inventoryStart, slots.size(), true)) {
+			return ItemStack.EMPTY;
+		}
+
+		int moved = available.getCount() - remainder.getCount();
+
+		if (moved > 0) {
+			// Charges the EMC, and can still come back empty if the balance moved meanwhile.
+			items.extractItem(index, moved, false);
 		}
 
 		return ItemStack.EMPTY;

@@ -146,8 +146,27 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 	@Override
 	@Nonnull
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		if (slot < inputs.size() || amount <= 0) {
+		if (amount <= 0) {
 			return ItemStack.EMPTY;
+		}
+
+		// Input slots hold real items waiting to be eaten, so they come back out the ordinary
+		// way. Only the output side is priced.
+		if (slot < inputs.size()) {
+			ItemStack present = inputs.get(slot);
+
+			if (present.isEmpty()) {
+				return ItemStack.EMPTY;
+			}
+
+			int taken = Math.min(amount, present.getCount());
+
+			if (!simulate) {
+				inputs.set(slot, taken >= present.getCount() ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(present, present.getCount() - taken));
+				link.setChanged();
+			}
+
+			return ItemHandlerHelper.copyStackWithSize(present, taken);
 		}
 
 		ItemStack template = outputs.get(slot - inputs.size());
@@ -177,7 +196,9 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 
 	@Override
 	public int getSlotLimit(int slot) {
-		return slot < inputs.size() ? 64 : (int) Math.min(Integer.MAX_VALUE, ProjectEXConfig.COMMON.emcLinkMaxOut.get());
+		// The config cap applies to how many a template can be priced at, in affordable(); the
+		// slot itself is a normal 64 so vanilla's slot handling stays on solid ground.
+		return 64;
 	}
 
 	@Override
