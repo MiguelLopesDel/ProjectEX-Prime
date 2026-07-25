@@ -130,26 +130,27 @@ public class ContainerLink extends AbstractContainerMenu {
 	}
 
 	/**
-	 * Slot positions of the three link tiers, matching the textures carried over from 1.12.
+	 * Slot positions, taken from the 1.12 screen: the input slots and the player inventory come
+	 * from its container, the output positions from where it placed its output buttons.
 	 */
-	private record Layout(int inputColumns, int inputY, int outputColumns, int outputY, int inventoryY) {
+	private record Layout(int inputX, int inputY, int inputColumns, int outputX, int outputY, int outputColumns, int inventoryY) {
 		static Layout of(int inputs, int outputs) {
 			if (inputs > 1) {
-				// Personal link: six by three inputs, one output on the right.
-				return new Layout(6, 17, 1, 35, 84);
+				// Personal link: six by three inputs, a single output on the right.
+				return new Layout(8, 17, 6, 152, 35, 1, 84);
 			}
 
 			if (outputs > 9) {
-				// Compressed refined link: one input on top of a nine by six output grid.
-				return new Layout(1, 17, 9, 39, 162);
+				// Compressed refined link: one input above a nine by six output grid.
+				return new Layout(8, 17, 1, 8, 41, 9, 162);
 			}
 
-			// Refined link: one input beside a nine wide output row.
-			return new Layout(1, 35, 9, 17, 84);
+			// Refined link: one input beside a three by three output grid.
+			return new Layout(35, 35, 1, 89, 17, 3, 84);
 		}
 
 		int inputX(int index) {
-			return 8 + (index % inputColumns) * 18;
+			return inputX + (index % inputColumns) * 18;
 		}
 
 		int inputY(int index) {
@@ -157,7 +158,7 @@ public class ContainerLink extends AbstractContainerMenu {
 		}
 
 		int outputX(int index) {
-			return 8 + (index % outputColumns) * 18 + (outputColumns == 1 ? 126 : 0);
+			return outputX + (index % outputColumns) * 18;
 		}
 
 		int outputY(int index) {
