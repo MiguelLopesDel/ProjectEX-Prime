@@ -39,6 +39,25 @@ public class ProjectEXRecipes extends RecipeProvider {
 		matter(consumer);
 		machines(consumer);
 		stars(consumer);
+		arcaneTablet(consumer);
+	}
+
+	/**
+	 * A crafting table and a chest folded into four Stone Tables, around a star to pay for what it
+	 * makes. Either kind of transmutation matter works as the binding, the same as in 1.12.
+	 */
+	private void arcaneTablet(Consumer<FinishedRecipe> consumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXItems.ARCANE_TABLET.get())
+				.pattern("TWT")
+				.pattern("MSM")
+				.pattern("TCT")
+				.define('T', ProjectEXBlocks.STONE_TABLE.get())
+				.define('W', Items.CRAFTING_TABLE)
+				.define('C', Tags.Items.CHESTS_WOODEN)
+				.define('M', Ingredient.of(ProjectEXItems.MATTER.get(Matter.MAGENTA).get(), PEItems.TRANSMUTATION_TABLET.get()))
+				.define('S', ProjectEXItems.MAGNUM_STAR.get(0).get())
+				.unlockedBy("has_stone_table", has(ProjectEXBlocks.STONE_TABLE.get()))
+				.save(consumer);
 	}
 
 	/**

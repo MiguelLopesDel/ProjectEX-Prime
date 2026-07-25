@@ -14,6 +14,9 @@ public final class ProjectEXMenus {
 	public static final RegistryObject<MenuType<ContainerLink>> LINK = REGISTRY.register("link",
 			() -> IForgeMenuType.create((IContainerFactory<ContainerLink>) ContainerLink::new));
 
+	public static final RegistryObject<MenuType<ContainerArcaneTablet>> ARCANE_TABLET = REGISTRY.register("arcane_tablet",
+			() -> IForgeMenuType.create((IContainerFactory<ContainerArcaneTablet>) ContainerArcaneTablet::new));
+
 	private ProjectEXMenus() {
 	}
 }

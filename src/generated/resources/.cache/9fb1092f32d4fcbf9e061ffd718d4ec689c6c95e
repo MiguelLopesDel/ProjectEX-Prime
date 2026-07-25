@@ -1,4 +1,5 @@
-// 1.20.1	2026-07-25T19:28:41.71224479	Recipes
+// 1.20.1	2026-07-25T20:08:45.763033992	Recipes
+dd398ec017c449401d358420297c8e018e8a07d2 data/projectex/advancements/recipes/misc/arcane_tablet.json
 8ddeb738c3c30504e06ab7b6081ccb187be06b05 data/projectex/advancements/recipes/misc/collector/blue.json
 94ae5e7e39fcad0009cd0755e590fc8266c903ce data/projectex/advancements/recipes/misc/collector/cyan.json
 49276a22a475631539a7b920adb9ef31dd753733 data/projectex/advancements/recipes/misc/collector/dark.json
@@ -103,6 +104,7 @@ e1bbd26ae66ae1fd0e3330fd50482d2ee56d00f2 data/projectex/advancements/recipes/mis
 57b00ab059a4e68c1df99a673b7d42b70d332bac data/projectex/advancements/recipes/misc/star/magnum_star_vier.json
 d87cc1a3bee708dcd7842297ac58fb22633f696d data/projectex/advancements/recipes/misc/star/magnum_star_zwei.json
 89a83767161dbd6c1b30c3bcfac95e16e0b3f352 data/projectex/advancements/recipes/misc/stone_table.json
+6a035bdeed6452cb6f9588857b76237ed3a7a297 data/projectex/recipes/arcane_tablet.json
 2e34627635e6c6b5241181160155aee533678cbb data/projectex/recipes/collector/blue.json
 fe4a382b3da61bdc1627c497c6bbeeddeb82502f data/projectex/recipes/collector/cyan.json
 97e3d13327f2c30bd8f913047a6d27f9ff318007 data/projectex/recipes/collector/dark.json

@@ -39,6 +39,7 @@ public class ProjectEXItemModels extends ItemModelProvider {
 		flatItem(ProjectEXItems.CLAY_MATTER.getId().getPath(), "item/matter/clay");
 		flatItem(ProjectEXItems.FINAL_STAR_SHARD.getId().getPath(), "item/final_star_shard");
 		flatItem(ProjectEXItems.FINAL_STAR.getId().getPath(), "item/final_star");
+		flatItem(ProjectEXItems.ARCANE_TABLET.getId().getPath(), "item/arcane_tablet");
 
 		for (RegistryObject<Item> star : ProjectEXItems.MAGNUM_STAR) {
 			flatItem(star.getId().getPath(), "item/" + star.getId().getPath());

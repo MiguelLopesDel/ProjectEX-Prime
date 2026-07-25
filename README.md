@@ -27,19 +27,24 @@ Ported so far:
 - Matter items, compressed collectors, final star shard, clay matter
 - EMC storage items: Magnum and Colossal Stars (12 tiers) and the Final Star, through
   ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying
+- Arcane Transmutation Tablet: a portable crafting grid that buys its ingredients back out of
+  your EMC after every craft, beside a transmutation panel that searches, learns, unlearns,
+  sells and buys. The panel is client side display only; every decision is the server's
 - Assets and data generation: blockstates, models, translations, loot tables and
   recipes for everything above
 - In game guide, written for [GuideME](https://github.com/AppliedEnergistics/GuideME) and
-  covering collectors, relays, power flowers, the EMC links and the tier ladder
+  covering collectors, relays, power flowers, the EMC links, the tier ladder and the tablet
 
 Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 `742a85c` and can be pulled back out with `git show 742a85c:<path>`:
 
-- **GUI layer**: Arcane Tablet and Alchemy Table, with their menus and screens
+- **Alchemy Table**, with its menu, screen and recipes
 - **Energy Link's EMC to Forge Energy conversion**
 - **Knowledge Sharing Book**
-- **JEI integration**
-- **Recipes for the deferred items** (knowledge book, arcane tablet)
+- **JEI integration**, including recipe transfer into the tablet and the search bar sync that
+  the two JEI search modes are named after
+- **Carrying stored EMC across a star craft**: in 1.12 crafting four stars into the next tier
+  kept whatever EMC they held
 
 ## Requirements
 

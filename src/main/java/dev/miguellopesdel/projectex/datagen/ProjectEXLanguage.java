@@ -63,7 +63,23 @@ public class ProjectEXLanguage extends LanguageProvider {
 			addItem(ProjectEXItems.COLOSSAL_STAR.get(i), "Colossal Star " + starNames[i]);
 		}
 
+		addItem(ProjectEXItems.ARCANE_TABLET, "Arcane Transmutation Tablet");
+
 		add("item.projectex.final_star.pedestal", "Copies items dropped on the pedestal into an adjacent inventory");
+
+		// The transmutation panel and the tablet's crafting helpers.
+		add("gui.projectex.arcane_tablet.burn", "Sell what you are holding. Shift: fill or empty an EMC item");
+		add("gui.projectex.arcane_tablet.learn", "Learn");
+		add("gui.projectex.arcane_tablet.unlearn", "Unlearn");
+		add("gui.projectex.arcane_tablet.rotate", "Rotate. Shift: anticlockwise");
+		add("gui.projectex.arcane_tablet.balance", "Balance. Shift: spread");
+		add("gui.projectex.arcane_tablet.clear", "Clear");
+
+		add("projectex.general.search_type", "Search Type");
+		add("projectex.general.search_type.normal", "Normal");
+		add("projectex.general.search_type.autoselected", "Auto-selected");
+		add("projectex.general.search_type.normal_jei_sync", "Normal (JEI Sync)");
+		add("projectex.general.search_type.autoselected_jei_sync", "Auto-selected (JEI Sync)");
 
 		add("block.projectex.energy_link.tooltip", "You can use this block to add EMC to your Transmutation Table using Collectors.");
 		add("block.projectex.personal_link.tooltip", "Same as Basic Energy EMC Link, but also allows to import and export items.");

@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "forge:chests/wooden"
+    },
+    "M": [
+      {
+        "item": "projectex:magenta_matter"
+      },
+      {
+        "item": "projecte:transmutation_tablet"
+      }
+    ],
+    "S": {
+      "item": "projectex:magnum_star_ein"
+    },
+    "T": {
+      "item": "projectex:stone_table"
+    },
+    "W": {
+      "item": "minecraft:crafting_table"
+    }
+  },
+  "pattern": [
+    "TWT",
+    "MSM",
+    "TCT"
+  ],
+  "result": {
+    "item": "projectex:arcane_tablet"
+  },
+  "show_notification": true
+}

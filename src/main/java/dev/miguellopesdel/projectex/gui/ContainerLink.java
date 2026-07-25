@@ -1,17 +1,15 @@
 package dev.miguellopesdel.projectex.gui;
 
+import dev.miguellopesdel.projectex.Knowledge;
 import dev.miguellopesdel.projectex.blockentity.LinkItemHandler;
 import dev.miguellopesdel.projectex.blockentity.TileLink;
 import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
-import moze_intel.projecte.api.capabilities.PECapabilities;
 import moze_intel.projecte.api.event.PlayerAttemptCondenserSetEvent;
-import moze_intel.projecte.api.event.PlayerAttemptLearnEvent;
 import moze_intel.projecte.api.proxy.IEMCProxy;
 import moze_intel.projecte.emc.nbt.NBTManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -116,7 +114,7 @@ public class ContainerLink extends AbstractContainerMenu {
 			return;
 		}
 
-		IKnowledgeProvider knowledge = player.getCapability(PECapabilities.KNOWLEDGE_CAPABILITY).orElse(null);
+		IKnowledgeProvider knowledge = Knowledge.of(player);
 
 		if (knowledge == null) {
 			return;
@@ -125,14 +123,8 @@ public class ContainerLink extends AbstractContainerMenu {
 		ItemInfo source = ItemInfo.fromStack(carried);
 		ItemInfo reduced = NBTManager.getPersistentInfo(source);
 
-		if (!knowledge.hasKnowledge(reduced)) {
-			if (MinecraftForge.EVENT_BUS.post(new PlayerAttemptLearnEvent(player, source, reduced))) {
-				return;
-			}
-
-			if (knowledge.addKnowledge(reduced) && player instanceof ServerPlayer serverPlayer) {
-				knowledge.sync(serverPlayer);
-			}
+		if (!Knowledge.teach(player, knowledge, source).known()) {
+			return;
 		}
 
 		if (!MinecraftForge.EVENT_BUS.post(new PlayerAttemptCondenserSetEvent(player, source, reduced))) {
