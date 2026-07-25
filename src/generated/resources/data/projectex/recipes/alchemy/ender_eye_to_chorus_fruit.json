@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:ender_eye"
+  },
+  "result": {
+    "item": "minecraft:chorus_fruit"
+  }
+}

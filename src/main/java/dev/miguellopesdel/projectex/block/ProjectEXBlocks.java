@@ -26,6 +26,7 @@ public final class ProjectEXBlocks {
 	public static final Map<Matter, RegistryObject<Block>> POWER_FLOWER = perMatter(matter -> REGISTRY.register(matter.id + "_power_flower", () -> new BlockPowerFlower(matter)));
 
 	public static final RegistryObject<Block> STONE_TABLE = REGISTRY.register("stone_table", BlockStoneTable::new);
+	public static final RegistryObject<Block> ALCHEMY_TABLE = REGISTRY.register("alchemy_table", BlockAlchemyTable::new);
 
 	private ProjectEXBlocks() {
 	}

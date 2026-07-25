@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:stick"
+  },
+  "result": {
+    "item": "minecraft:dead_bush"
+  }
+}

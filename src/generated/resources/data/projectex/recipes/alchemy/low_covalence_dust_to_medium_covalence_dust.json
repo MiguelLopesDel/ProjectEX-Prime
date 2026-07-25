@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "projecte:low_covalence_dust"
+  },
+  "result": {
+    "item": "projecte:medium_covalence_dust"
+  }
+}

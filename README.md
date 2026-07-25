@@ -28,6 +28,8 @@ Ported so far:
 - Stone Table, with its own transmutation panel so that the whitelist a pack can put on it
   actually restricts what it handles
 - On screen EMC counter, with the rate it is moving at, placed by config
+- Alchemy Table, turning one item into another for EMC. The chains that were a hardcoded list in
+  1.12 are a recipe type now, so a pack can add, remove and reprice them
 - Matter items, compressed collectors, final star shard, clay matter
 - EMC storage items: Magnum and Colossal Stars (12 tiers) and the Final Star, through
   ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying and the EMC
@@ -43,7 +45,6 @@ Ported so far:
 Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 `742a85c` and can be pulled back out with `git show 742a85c:<path>`:
 
-- **Alchemy Table**, with its menu, screen and recipes
 - **Energy Link's EMC to Forge Energy conversion**
 - **Knowledge Sharing Book**
 - **JEI integration**, including recipe transfer into the tablet and the search bar sync that

@@ -2,10 +2,10 @@
 	"parent": "block/block",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "minecraft:blocks/piston_top_normal",
+		"0": "minecraft:block/piston_top",
 		"1": "projectex:block/stone_table_top",
-		"2": "minecraft:blocks/sandstone_top",
-		"3": "minecraft:blocks/wool_colored_black",
+		"2": "minecraft:block/sandstone_top",
+		"3": "minecraft:block/black_wool",
 		"5": "projectex:block/stone_table_side",
 		"particle": "projectex:block/stone_table_top"
 	},

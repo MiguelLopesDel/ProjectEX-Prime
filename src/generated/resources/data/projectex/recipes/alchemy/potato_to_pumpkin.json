@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:potato"
+  },
+  "result": {
+    "item": "minecraft:pumpkin"
+  }
+}

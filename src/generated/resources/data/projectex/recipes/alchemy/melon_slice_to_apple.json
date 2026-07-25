@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:melon_slice"
+  },
+  "result": {
+    "item": "minecraft:apple"
+  }
+}

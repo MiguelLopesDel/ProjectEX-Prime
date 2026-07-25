@@ -27,6 +27,7 @@ public final class ProjectEXItems {
 	public static final RegistryObject<Item> REFINED_LINK = blockItem("refined_link", ProjectEXBlocks.REFINED_LINK);
 	public static final RegistryObject<Item> COMPRESSED_REFINED_LINK = blockItem("compressed_refined_link", ProjectEXBlocks.COMPRESSED_REFINED_LINK);
 	public static final RegistryObject<Item> STONE_TABLE = blockItem("stone_table", ProjectEXBlocks.STONE_TABLE);
+	public static final RegistryObject<Item> ALCHEMY_TABLE = blockItem("alchemy_table", ProjectEXBlocks.ALCHEMY_TABLE);
 
 	public static final Map<Matter, RegistryObject<Item>> COLLECTOR = perMatter(matter -> blockItem(matter.id + "_collector", ProjectEXBlocks.COLLECTOR.get(matter)));
 	public static final Map<Matter, RegistryObject<Item>> RELAY = perMatter(matter -> blockItem(matter.id + "_relay", ProjectEXBlocks.RELAY.get(matter)));

@@ -74,6 +74,12 @@ legacyForge {
 // Include resources produced by the data generators.
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// A dedicated server is normally driven from its console. Without this the run task swallows
+// stdin and there is no way to type a command into it.
+tasks.matching { it.name == 'runServer' }.configureEach {
+    standardInput = System.in
+}
+
 // 'localRuntime' holds mods that are useful to have in the dev client but that
 // dependents of this mod should not inherit.
 configurations {

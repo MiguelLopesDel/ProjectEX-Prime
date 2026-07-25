@@ -43,6 +43,7 @@ public class ProjectEXBlockStates extends BlockStateProvider {
 		existingModel(ProjectEXBlocks.PERSONAL_LINK, "personal_link");
 		existingModel(ProjectEXBlocks.REFINED_LINK, "refined_link");
 		existingModel(ProjectEXBlocks.COMPRESSED_REFINED_LINK, "compressed_refined_link");
+		existingModel(ProjectEXBlocks.ALCHEMY_TABLE, "alchemy_table");
 
 		stoneTable();
 	}

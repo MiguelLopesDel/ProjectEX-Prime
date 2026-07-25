@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:fern"
+  },
+  "result": {
+    "item": "minecraft:vine"
+  }
+}

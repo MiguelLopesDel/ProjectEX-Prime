@@ -1,4 +1,5 @@
-// 1.20.1	2026-07-25T12:20:39.585862092	Loot Tables
+// 1.20.1	2026-07-25T21:16:15.395784493	Loot Tables
+85e2187e00fc4ca32fa2be2d0eae40ebeaf9bb5e data/projectex/loot_tables/blocks/alchemy_table.json
 d17e0f0cd236f602eeffa17ef7ebd447c87d6b33 data/projectex/loot_tables/blocks/basic_collector.json
 561e4953c96e37349dbc024c96220b41152cb59e data/projectex/loot_tables/blocks/basic_power_flower.json
 0b231264793047dcd2dca99bbacd6e525946c47a data/projectex/loot_tables/blocks/basic_relay.json

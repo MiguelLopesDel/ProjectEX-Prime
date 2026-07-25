@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:beef"
+  },
+  "result": {
+    "item": "minecraft:rotten_flesh"
+  }
+}

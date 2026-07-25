@@ -30,6 +30,9 @@ public final class ProjectEXBlockEntities {
 	public static final RegistryObject<BlockEntityType<TilePowerFlower>> POWER_FLOWER =
 			REGISTRY.register("power_flower", () -> BlockEntityType.Builder.of(TilePowerFlower::new, blocks(ProjectEXBlocks.POWER_FLOWER.values())).build(null));
 
+	public static final RegistryObject<BlockEntityType<TileAlchemyTable>> ALCHEMY_TABLE =
+			REGISTRY.register("alchemy_table", () -> BlockEntityType.Builder.of(TileAlchemyTable::new, ProjectEXBlocks.ALCHEMY_TABLE.get()).build(null));
+
 	private ProjectEXBlockEntities() {
 	}
 

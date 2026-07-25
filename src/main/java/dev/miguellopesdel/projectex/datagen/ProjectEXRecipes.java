@@ -1,9 +1,11 @@
 package dev.miguellopesdel.projectex.datagen;
 
+import com.google.gson.JsonObject;
 import dev.miguellopesdel.projectex.Matter;
 import dev.miguellopesdel.projectex.ProjectEX;
 import dev.miguellopesdel.projectex.block.ProjectEXBlocks;
 import dev.miguellopesdel.projectex.item.ProjectEXItems;
+import dev.miguellopesdel.projectex.recipe.ProjectEXRecipeTypes;
 import moze_intel.projecte.gameObjs.registries.PEBlocks;
 import moze_intel.projecte.gameObjs.registries.PEItems;
 import net.minecraft.data.PackOutput;
@@ -15,9 +17,12 @@ import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
@@ -40,6 +45,98 @@ public class ProjectEXRecipes extends RecipeProvider {
 		machines(consumer);
 		stars(consumer);
 		arcaneTablet(consumer);
+		alchemyTable(consumer);
+		alchemyChains(consumer);
+	}
+
+	private void alchemyTable(Consumer<FinishedRecipe> consumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXBlocks.ALCHEMY_TABLE.get())
+				.pattern("123")
+				.pattern("TST")
+				.pattern("LDL")
+				.define('1', PEItems.LOW_COVALENCE_DUST.get())
+				.define('2', PEItems.MEDIUM_COVALENCE_DUST.get())
+				.define('3', PEItems.HIGH_COVALENCE_DUST.get())
+				.define('S', ProjectEXBlocks.STONE_TABLE.get())
+				.define('L', Tags.Items.RODS_WOODEN)
+				.define('D', Tags.Items.GEMS_DIAMOND)
+				.define('T', Items.TORCH)
+				.unlockedBy("has_stone_table", has(ProjectEXBlocks.STONE_TABLE.get()))
+				.save(consumer);
+	}
+
+	/**
+	 * The chains the Alchemy Table can walk, carried over from 1.12 where they were a hardcoded
+	 * list. They are ordinary recipes now, so a pack adds, removes or reprices them like any other.
+	 */
+	private void alchemyChains(Consumer<FinishedRecipe> consumer) {
+		chain(consumer, Items.CHARCOAL, Items.COAL);
+		chain(consumer, Items.REDSTONE, Items.GUNPOWDER, Items.GLOWSTONE_DUST, Items.BLAZE_POWDER, Items.BLAZE_ROD);
+		chain(consumer, Items.LAPIS_LAZULI, Items.PRISMARINE_SHARD, Items.PRISMARINE_CRYSTALS);
+		chain(consumer, PEItems.LOW_COVALENCE_DUST.get(), PEItems.MEDIUM_COVALENCE_DUST.get(), PEItems.HIGH_COVALENCE_DUST.get());
+		chain(consumer, Items.BEEF, Items.ROTTEN_FLESH, Items.LEATHER, Items.SPIDER_EYE, Items.BONE);
+		chain(consumer, Items.WHEAT_SEEDS, Items.MELON_SLICE, Items.APPLE, Items.CARROT, Items.BEETROOT, Items.POTATO, Items.PUMPKIN);
+		chain(consumer, Items.COOKIE, Items.BREAD, Items.CAKE);
+		chain(consumer, PEItems.ALCHEMICAL_COAL.get(), Items.REDSTONE_BLOCK, Items.LAVA_BUCKET, Items.OBSIDIAN);
+		chain(consumer, Items.OAK_LEAVES, Items.GRASS, Items.FERN, Items.VINE, Items.LILY_PAD);
+
+		step(consumer, Items.ENDER_EYE, Items.CHORUS_FRUIT);
+		step(consumer, Items.STRING, Items.FEATHER);
+		step(consumer, Items.STICK, Items.DEAD_BUSH);
+	}
+
+	private void chain(Consumer<FinishedRecipe> consumer, ItemLike... steps) {
+		for (int i = 1; i < steps.length; i++) {
+			step(consumer, steps[i - 1], steps[i]);
+		}
+	}
+
+	private void step(Consumer<FinishedRecipe> consumer, ItemLike from, ItemLike to) {
+		consumer.accept(new AlchemyStep(id("alchemy/" + path(from) + "_to_" + path(to)), Ingredient.of(from), new ItemStack(to)));
+	}
+
+	private static String path(ItemLike item) {
+		return ForgeRegistries.ITEMS.getKey(item.asItem()).getPath();
+	}
+
+	/**
+	 * Writes one alchemy step out. There is no advancement: the table is the recipe book for its
+	 * own chains, and a toast for each of the thirty steps would be noise.
+	 */
+	private record AlchemyStep(ResourceLocation id, Ingredient input, ItemStack output) implements FinishedRecipe {
+		@Override
+		public void serializeRecipeData(JsonObject json) {
+			json.add("ingredient", input.toJson());
+
+			JsonObject result = new JsonObject();
+			result.addProperty("item", ForgeRegistries.ITEMS.getKey(output.getItem()).toString());
+
+			if (output.getCount() > 1) {
+				result.addProperty("count", output.getCount());
+			}
+
+			json.add("result", result);
+		}
+
+		@Override
+		public ResourceLocation getId() {
+			return id;
+		}
+
+		@Override
+		public RecipeSerializer<?> getType() {
+			return ProjectEXRecipeTypes.ALCHEMY_TABLE_SERIALIZER.get();
+		}
+
+		@Override
+		public JsonObject serializeAdvancement() {
+			return null;
+		}
+
+		@Override
+		public ResourceLocation getAdvancementId() {
+			return null;
+		}
 	}
 
 	/**

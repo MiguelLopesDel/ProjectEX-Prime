@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:blaze_powder"
+  },
+  "result": {
+    "item": "minecraft:blaze_rod"
+  }
+}

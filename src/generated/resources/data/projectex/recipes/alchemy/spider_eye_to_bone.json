@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:spider_eye"
+  },
+  "result": {
+    "item": "minecraft:bone"
+  }
+}

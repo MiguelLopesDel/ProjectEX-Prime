@@ -4,6 +4,7 @@ import dev.miguellopesdel.projectex.block.ProjectEXBlocks;
 import dev.miguellopesdel.projectex.gui.ProjectEXMenus;
 import dev.miguellopesdel.projectex.item.ProjectEXItems;
 import dev.miguellopesdel.projectex.net.ProjectEXNetwork;
+import dev.miguellopesdel.projectex.recipe.ProjectEXRecipeTypes;
 import dev.miguellopesdel.projectex.blockentity.ProjectEXBlockEntities;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
@@ -41,6 +42,8 @@ public class ProjectEX {
 		ProjectEXItems.REGISTRY.register(modBus);
 		ProjectEXBlockEntities.REGISTRY.register(modBus);
 		ProjectEXMenus.REGISTRY.register(modBus);
+		ProjectEXRecipeTypes.TYPES.register(modBus);
+		ProjectEXRecipeTypes.SERIALIZERS.register(modBus);
 		TABS.register(modBus);
 
 		ProjectEXNetwork.register();

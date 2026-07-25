@@ -35,6 +35,7 @@ public class ProjectEXItemModels extends ItemModelProvider {
 		blockItem("refined_link");
 		blockItem("compressed_refined_link");
 		blockItem("stone_table");
+		blockItem("alchemy_table");
 
 		flatItem(ProjectEXItems.CLAY_MATTER.getId().getPath(), "item/matter/clay");
 		flatItem(ProjectEXItems.FINAL_STAR_SHARD.getId().getPath(), "item/final_star_shard");

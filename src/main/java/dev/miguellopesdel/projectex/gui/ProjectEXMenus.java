@@ -20,6 +20,9 @@ public final class ProjectEXMenus {
 	public static final RegistryObject<MenuType<ContainerStoneTable>> STONE_TABLE = REGISTRY.register("stone_table",
 			() -> IForgeMenuType.create((IContainerFactory<ContainerStoneTable>) ContainerStoneTable::new));
 
+	public static final RegistryObject<MenuType<ContainerAlchemyTable>> ALCHEMY_TABLE = REGISTRY.register("alchemy_table",
+			() -> IForgeMenuType.create((IContainerFactory<ContainerAlchemyTable>) ContainerAlchemyTable::new));
+
 	private ProjectEXMenus() {
 	}
 }

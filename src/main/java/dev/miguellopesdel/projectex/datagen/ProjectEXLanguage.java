@@ -50,6 +50,7 @@ public class ProjectEXLanguage extends LanguageProvider {
 		addBlock(ProjectEXBlocks.REFINED_LINK, "Refined EMC Link");
 		addBlock(ProjectEXBlocks.COMPRESSED_REFINED_LINK, "Compressed Refined EMC Link");
 		addBlock(ProjectEXBlocks.STONE_TABLE, "Stone Transmutation Table");
+		addBlock(ProjectEXBlocks.ALCHEMY_TABLE, "Alchemy Table");
 
 		addItem(ProjectEXItems.CLAY_MATTER, "Clay Matter");
 		addItem(ProjectEXItems.FINAL_STAR_SHARD, "Final Star Shard");
@@ -90,6 +91,7 @@ public class ProjectEXLanguage extends LanguageProvider {
 		add("block.projectex.refined_link.tooltip", "Same as Personal EMC Link, but has 1 input slot and 9 output slots. Designed to be used with Refined Storage-like systems. It also learns items from input slots.");
 		add("block.projectex.compressed_refined_link.tooltip", "Same as Refined EMC Link, but has 54 output slots.");
 		add("block.projectex.stone_table.tooltip", "A Transmutation Table you can place on walls and ceilings.");
+		add("block.projectex.alchemy_table.tooltip", "Turns one item into another by spending EMC. Feed it from a Collector or a Relay.");
 
 		add("block.projectex.collector.tooltip", "Server TPS friendly. Generates EMC only once a second.");
 		add("block.projectex.collector.emc_produced", "Produced EMC: %s/s");

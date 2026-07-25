@@ -1,4 +1,6 @@
 {
+  "block.projectex.alchemy_table": "Alchemy Table",
+  "block.projectex.alchemy_table.tooltip": "Turns one item into another by spending EMC. Feed it from a Collector or a Relay.",
   "block.projectex.basic_collector": "Basic Collector [MK1]",
   "block.projectex.basic_power_flower": "Basic Power Flower Bonsai Pot [MK1]",
   "block.projectex.basic_relay": "Basic Relay [MK1]",

@@ -1,0 +1,9 @@
+{
+  "type": "projectex:alchemy_table",
+  "ingredient": {
+    "item": "minecraft:glowstone_dust"
+  },
+  "result": {
+    "item": "minecraft:blaze_powder"
+  }
+}

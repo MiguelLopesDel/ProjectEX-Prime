@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex.client;
 
 import dev.miguellopesdel.projectex.ProjectEX;
+import dev.miguellopesdel.projectex.gui.GuiAlchemyTable;
 import dev.miguellopesdel.projectex.gui.GuiArcaneTablet;
 import dev.miguellopesdel.projectex.gui.GuiLink;
 import dev.miguellopesdel.projectex.gui.GuiStoneTable;
@@ -22,6 +23,7 @@ public final class ProjectEXClient {
 			MenuScreens.register(ProjectEXMenus.LINK.get(), GuiLink::new);
 			MenuScreens.register(ProjectEXMenus.ARCANE_TABLET.get(), GuiArcaneTablet::new);
 			MenuScreens.register(ProjectEXMenus.STONE_TABLE.get(), GuiStoneTable::new);
+			MenuScreens.register(ProjectEXMenus.ALCHEMY_TABLE.get(), GuiAlchemyTable::new);
 		});
 	}
 }
