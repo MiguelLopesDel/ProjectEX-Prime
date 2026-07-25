@@ -29,10 +29,14 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 	private final NonNullList<ItemStack> inputs;
 	private final NonNullList<ItemStack> outputs;
 
+	/** What the server last sent for each output slot. Client only: the server prices on demand. */
+	private final NonNullList<ItemStack> clientView;
+
 	public LinkItemHandler(TileLink link, int inputSlots, int outputSlots) {
 		this.link = link;
 		this.inputs = NonNullList.withSize(inputSlots, ItemStack.EMPTY);
 		this.outputs = NonNullList.withSize(outputSlots, ItemStack.EMPTY);
+		this.clientView = NonNullList.withSize(outputSlots, ItemStack.EMPTY);
 	}
 
 	public int inputCount() {
@@ -45,6 +49,10 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 
 	public void clearInput(int index) {
 		inputs.set(index, ItemStack.EMPTY);
+	}
+
+	public int outputCount() {
+		return outputs.size();
 	}
 
 	/** The template of an output slot, always a single item; only the menu sets these. */
@@ -69,14 +77,15 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 			return inputs.get(slot);
 		}
 
-		ItemStack template = outputs.get(slot - inputs.size());
+		int index = slot - inputs.size();
 
-		// Only the server can price a template, since the owner's balance lives there. On the
-		// client the list holds whatever the server last sent for this slot, and it is shown
-		// as is; recomputing here would always come out empty.
+		// Only the server can price a template, since the owner's balance lives there. The
+		// client shows what the server last sent; recomputing here would always come out empty.
 		if (isClient()) {
-			return template;
+			return clientView.get(index);
 		}
+
+		ItemStack template = outputs.get(index);
 
 		int affordable = affordable(template, template.getMaxStackSize());
 		return affordable <= 0 ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(template, affordable);
@@ -93,7 +102,7 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 		// Slot syncing from the server lands here. Dropping it used to leave the client with
 		// empty output slots however much the owner could afford.
 		if (isClient()) {
-			outputs.set(slot - inputs.size(), stack);
+			clientView.set(slot - inputs.size(), stack);
 		}
 	}
 

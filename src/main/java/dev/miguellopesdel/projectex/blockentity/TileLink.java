@@ -94,6 +94,30 @@ public class TileLink extends EmcStorageBlockEntity {
 	}
 
 	@Override
+	public CompoundTag getUpdateTag() {
+		CompoundTag tag = super.getUpdateTag();
+		items.save(tag);
+		tag.putString("OwnerName", ownerBuffer.ownerName);
+		return tag;
+	}
+
+	@Override
+	public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+		return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
+	}
+
+	@Override
+	public void setChanged() {
+		super.setChanged();
+
+		// The screen draws the templates, so the client needs them even while nothing is
+		// affordable and the slots themselves are empty.
+		if (level != null && !level.isClientSide()) {
+			level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 2);
+		}
+	}
+
+	@Override
 	public void load(CompoundTag tag) {
 		super.load(tag);
 		ownerBuffer.load(tag);

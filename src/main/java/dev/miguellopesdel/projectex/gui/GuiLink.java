@@ -6,6 +6,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public class GuiLink extends AbstractContainerScreen<ContainerLink> {
 	private static final ResourceLocation PERSONAL = texture("personal_link");
@@ -47,7 +49,32 @@ public class GuiLink extends AbstractContainerScreen<ContainerLink> {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderBackground(graphics);
 		super.render(graphics, mouseX, mouseY, partialTick);
+		renderTemplates(graphics);
 		renderTooltip(graphics, mouseX, mouseY);
+	}
+
+	/**
+	 * Draws the template of every output slot that currently has nothing in it, dimmed, so a
+	 * slot still says what it makes when the owner cannot afford a single one.
+	 */
+	private void renderTemplates(GuiGraphics graphics) {
+		int inputs = menu.link.items().inputCount();
+		int outputs = menu.link.items().outputCount();
+
+		for (int i = 0; i < outputs; i++) {
+			Slot slot = menu.slots.get(inputs + i);
+			ItemStack template = menu.link.items().getTemplate(i);
+
+			if (slot.hasItem() || template.isEmpty()) {
+				continue;
+			}
+
+			int x = leftPos + slot.x;
+			int y = topPos + slot.y;
+
+			graphics.renderItem(template, x, y);
+			graphics.fill(x, y, x + 16, y + 16, 0x80101010);
+		}
 	}
 
 	@Override

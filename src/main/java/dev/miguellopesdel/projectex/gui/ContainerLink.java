@@ -90,7 +90,9 @@ public class ContainerLink extends AbstractContainerMenu {
 				return;
 			}
 
-			if (clickType == ClickType.PICKUP && button == 1) {
+			// Shift and right click clears the template. Plain right click is left alone so it
+			// keeps taking half a stack, which is what every other slot in the game does.
+			if (clickType == ClickType.QUICK_MOVE && button == 1) {
 				items.setTemplate(slotId - firstOutputSlot, ItemStack.EMPTY);
 				return;
 			}
