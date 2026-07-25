@@ -11,6 +11,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 
+import java.util.List;
+
 public class GuiArcaneTablet extends GuiTableBase<ContainerArcaneTablet> {
 	private static final ResourceLocation TEXTURE = new ResourceLocation(ProjectEX.MOD_ID, "textures/gui/arcane_tablet.png");
 
@@ -87,6 +89,11 @@ public class GuiArcaneTablet extends GuiTableBase<ContainerArcaneTablet> {
 	protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
 		super.renderBg(graphics, partialTick, mouseX, mouseY);
 		graphics.blit(TEXTURE, leftPos + PANEL_X, topPos + PANEL_Y, 180, 19, PANEL_WIDTH, PANEL_HEIGHT, 256, 256);
+	}
+
+	@Override
+	public List<Rect2i> extraAreas() {
+		return List.of(new Rect2i(leftPos + PANEL_X, topPos + PANEL_Y, PANEL_WIDTH, PANEL_HEIGHT));
 	}
 
 	@Override

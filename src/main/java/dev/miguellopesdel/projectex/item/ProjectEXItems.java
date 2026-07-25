@@ -59,6 +59,9 @@ public final class ProjectEXItems {
 	public static final RegistryObject<Item> FINAL_STAR = REGISTRY.register("final_star",
 			() -> new ItemFinalStar(new Item.Properties().fireResistant().rarity(Rarity.EPIC)));
 
+	public static final RegistryObject<Item> KNOWLEDGE_SHARING_BOOK = REGISTRY.register("knowledge_sharing_book",
+			() -> new ItemKnowledgeSharingBook(new Item.Properties().rarity(Rarity.RARE)));
+
 	public static final RegistryObject<Item> ARCANE_TABLET = REGISTRY.register("arcane_tablet",
 			() -> new ItemArcaneTablet(new Item.Properties().rarity(Rarity.RARE)));
 

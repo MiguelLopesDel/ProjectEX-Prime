@@ -88,6 +88,16 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 		return ProjectEXConfig.CLIENT.searchType.get();
 	}
 
+	/** The ring's buttons, so JEI can tell what is under the cursor when one is hovered. */
+	public List<WidgetKnowledgeItem> knowledgeButtons() {
+		return itemButtons;
+	}
+
+	/** Parts of the screen that hang outside the background, which JEI must not draw over. */
+	public List<Rect2i> extraAreas() {
+		return List.of();
+	}
+
 	/** Adds one slot of the ring. Pressing it buys one, or a whole stack with shift held. */
 	protected WidgetKnowledgeItem addItemButton(int x, int y) {
 		WidgetKnowledgeItem button = new WidgetKnowledgeItem(menu, x, y, pressed ->

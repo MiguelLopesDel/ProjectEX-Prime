@@ -1,4 +1,4 @@
-// 1.20.1	2026-07-25T21:16:15.392030854	Item Models: projectex
+// 1.20.1	2026-07-25T21:54:32.075413521	Item Models: projectex
 e734f1e5b9477218d4d51a10b2cbbf51fdd2b95f assets/projectex/models/item/alchemy_table.json
 104325141914f972af0a2a4e9b42c9712538e6b9 assets/projectex/models/item/arcane_tablet.json
 1fbb618d6b832852b31a624cb6bbca0c3c87df79 assets/projectex/models/item/basic_collector.json
@@ -44,6 +44,7 @@ d0249093c0c9ee8cc532dc4779f1cc3ea38441f0 assets/projectex/models/item/final_star
 dc5cb6423e783a1d99eede6e44acbe582b08020b assets/projectex/models/item/green_matter.json
 db7a99edef496da61d814ee8178e02ce4fd6f552 assets/projectex/models/item/green_power_flower.json
 017de01d0cdc5e376b3fbe9d6d52885487771cc2 assets/projectex/models/item/green_relay.json
+1dd6f530637125b7692d220b2294a7faa428324b assets/projectex/models/item/knowledge_sharing_book.json
 916adea653c604f7d9084c0676b1e244143169c2 assets/projectex/models/item/lime_collector.json
 916adea653c604f7d9084c0676b1e244143169c2 assets/projectex/models/item/lime_compressed_collector.json
 f544ce465cd4ebf490adff7f5ca35298f3ece5cc assets/projectex/models/item/lime_matter.json

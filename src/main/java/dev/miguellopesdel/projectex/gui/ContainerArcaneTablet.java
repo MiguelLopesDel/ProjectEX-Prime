@@ -5,6 +5,7 @@ import dev.miguellopesdel.projectex.blockentity.PersistentItems;
 import dev.miguellopesdel.projectex.item.ItemArcaneTablet;
 import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.utils.EMCHelper;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.nbt.CompoundTag;
@@ -19,11 +20,14 @@ import net.minecraft.world.inventory.ResultSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,23 +204,43 @@ public class ContainerArcaneTablet extends ContainerTableBase {
 
 		BigInteger price = BigInteger.valueOf(value);
 
-		if (knowledge.getEmc().compareTo(price) < 0) {
-			return false;
-		}
-
-		ItemStack bought = item.createStack();
-		ItemStack current = grid.getItem(index);
-
-		if (current.isEmpty()) {
-			grid.getItems().set(index, bought);
-		} else if (current.getCount() < current.getMaxStackSize() && ItemStack.isSameItemSameTags(current, bought)) {
-			current.grow(1);
-		} else {
+		if (knowledge.getEmc().compareTo(price) < 0 || !place(index, item.createStack())) {
 			return false;
 		}
 
 		removeEmc(price);
 		return true;
+	}
+
+	/** Buys the cheapest of the things a recipe would accept in this slot. */
+	private boolean buyInto(int index, List<ItemStack> options) {
+		List<ItemStack> cheapestFirst = new ArrayList<>(options);
+		cheapestFirst.sort(Comparator.comparingLong((ItemStack stack) -> EMCHelper.getEmcValue(stack)));
+
+		for (ItemStack option : cheapestFirst) {
+			if (buyInto(index, option)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/** Puts one of an item into a grid slot, if the slot is empty or already holds the same thing. */
+	private boolean place(int index, ItemStack wanted) {
+		ItemStack current = grid.getItem(index);
+
+		if (current.isEmpty()) {
+			grid.getItems().set(index, wanted.copyWithCount(1));
+			return true;
+		}
+
+		if (current.getCount() < current.getMaxStackSize() && ItemStack.isSameItemSameTags(current, wanted)) {
+			current.grow(1);
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -248,6 +272,98 @@ public class ContainerArcaneTablet extends ContainerTableBase {
 		grid.setChanged();
 		broadcastChanges();
 		return true;
+	}
+
+	/**
+	 * Lays a crafting recipe out in the grid, which is what JEI's transfer arrow asks for.
+	 *
+	 * <p>Ingredients come from the player's inventory first and are bought from EMC only for what is
+	 * missing, so the arrow spends items before it spends the balance. With {@code fillStacks} it
+	 * repeats until the grid is full, for the same reason vanilla's shift click does.
+	 */
+	public void transferRecipe(CraftingRecipe recipe, boolean fillStacks) {
+		List<List<ItemStack>> options = layOut(recipe);
+		clear();
+		fill(options);
+
+		if (fillStacks) {
+			// A grid slot holds at most 64, and the first pass placed one.
+			for (int i = 1; i < 64; i++) {
+				fill(options);
+			}
+		}
+
+		grid.setChanged();
+		broadcastChanges();
+	}
+
+	/**
+	 * Where each ingredient goes in the three by three. A shaped recipe keeps its shape; anything
+	 * else is filled in reading order, which is what a shapeless recipe means.
+	 */
+	private static List<List<ItemStack>> layOut(CraftingRecipe recipe) {
+		List<List<ItemStack>> grid = new ArrayList<>(9);
+
+		for (int i = 0; i < 9; i++) {
+			grid.add(List.of());
+		}
+
+		NonNullList<Ingredient> ingredients = recipe.getIngredients();
+
+		if (recipe instanceof ShapedRecipe shaped) {
+			for (int y = 0; y < shaped.getHeight(); y++) {
+				for (int x = 0; x < shaped.getWidth(); x++) {
+					grid.set(x + y * 3, List.of(ingredients.get(x + y * shaped.getWidth()).getItems()));
+				}
+			}
+		} else {
+			for (int i = 0; i < ingredients.size() && i < grid.size(); i++) {
+				grid.set(i, List.of(ingredients.get(i).getItems()));
+			}
+		}
+
+		return grid;
+	}
+
+	private void fill(List<List<ItemStack>> options) {
+		for (int i = 0; i < options.size(); i++) {
+			if (!options.get(i).isEmpty()) {
+				takeFromInventory(i, options.get(i));
+			}
+		}
+
+		for (int i = 0; i < options.size(); i++) {
+			if (!options.get(i).isEmpty()) {
+				buyInto(i, options.get(i));
+			}
+		}
+	}
+
+	/** Moves one matching item out of the player's inventory into a grid slot. */
+	private boolean takeFromInventory(int index, List<ItemStack> options) {
+		Inventory inventory = player.getInventory();
+
+		for (ItemStack wanted : options) {
+			ItemInfo want = PersistentItems.infoOf(wanted);
+
+			for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+				ItemStack candidate = inventory.getItem(slot);
+
+				if (candidate.isEmpty() || !want.equals(PersistentItems.infoOf(candidate)) || !place(index, candidate)) {
+					continue;
+				}
+
+				candidate.shrink(1);
+
+				if (candidate.isEmpty()) {
+					inventory.setItem(slot, ItemStack.EMPTY);
+				}
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

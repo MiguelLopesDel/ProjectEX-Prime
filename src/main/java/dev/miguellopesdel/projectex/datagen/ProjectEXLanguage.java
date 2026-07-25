@@ -65,6 +65,8 @@ public class ProjectEXLanguage extends LanguageProvider {
 		}
 
 		addItem(ProjectEXItems.ARCANE_TABLET, "Arcane Transmutation Tablet");
+		addItem(ProjectEXItems.KNOWLEDGE_SHARING_BOOK, "Knowledge Sharing Book");
+		add("item.projectex.knowledge_sharing_book.unsigned", "Sneak and right click to sign it");
 
 		add("item.projectex.final_star.pedestal", "Copies items dropped on the pedestal into an adjacent inventory");
 
@@ -79,6 +81,7 @@ public class ProjectEXLanguage extends LanguageProvider {
 		add("gui.projectex.arcane_tablet.rotate", "Rotate. Shift: anticlockwise");
 		add("gui.projectex.arcane_tablet.balance", "Balance. Shift: spread");
 		add("gui.projectex.arcane_tablet.clear", "Clear");
+		add("gui.projectex.arcane_tablet.recipe_too_big", "This recipe does not fit in a three by three grid");
 
 		add("projectex.general.search_type", "Search Type");
 		add("projectex.general.search_type.normal", "Normal");

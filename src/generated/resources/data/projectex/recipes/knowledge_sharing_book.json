@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:writable_book"
+    },
+    "N": {
+      "tag": "forge:nether_stars"
+    },
+    "R": {
+      "item": "projectex:violet_matter"
+    }
+  },
+  "pattern": [
+    "RNR",
+    "NBN",
+    "RNR"
+  ],
+  "result": {
+    "item": "projectex:knowledge_sharing_book"
+  },
+  "show_notification": true
+}

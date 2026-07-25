@@ -1,4 +1,4 @@
-// 1.20.1	2026-07-25T21:16:15.396450414	Recipes
+// 1.20.1	2026-07-25T21:54:32.077085426	Recipes
 62bf39ba401e01c8d4a69ae876f0bbb14b8870bf data/projectex/advancements/recipes/misc/alchemy_table.json
 dd398ec017c449401d358420297c8e018e8a07d2 data/projectex/advancements/recipes/misc/arcane_tablet.json
 8ddeb738c3c30504e06ab7b6081ccb187be06b05 data/projectex/advancements/recipes/misc/collector/blue.json
@@ -35,6 +35,7 @@ c1d586dc114a890980a1d49f95b44ecdf9f5b3f0 data/projectex/advancements/recipes/mis
 215789080abb13bd0bb686669f0adc63b597724c data/projectex/advancements/recipes/misc/compressed_refined_link.json
 5a33a81d0adf985937980e299f9df9c04542ab4d data/projectex/advancements/recipes/misc/energy_link.json
 1baf67d3ba37b24cc8583ce4a62bbc4ebfe0458a data/projectex/advancements/recipes/misc/final_star.json
+8d094b13fd92eea4617fa2e7456cbc222bbff613 data/projectex/advancements/recipes/misc/knowledge_sharing_book.json
 5a1a2f93481484455994d833edffe567b4c35ae1 data/projectex/advancements/recipes/misc/matter/blue_h.json
 94adb026d36d9cd03b221264f5f90b7c825f82ce data/projectex/advancements/recipes/misc/matter/blue_v.json
 1147c8db284e0795e211b24699608a3714638dee data/projectex/advancements/recipes/misc/matter/cyan_h.json
@@ -172,6 +173,7 @@ d6dea413101bfa3ae5b430d83e449ef54daa90fd data/projectex/recipes/compressed_colle
 1cf7e087279dee9cb36d685ed469f493afb77910 data/projectex/recipes/compressed_refined_link.json
 10ed877e0c797d5a412b73917467c9a647905f35 data/projectex/recipes/energy_link.json
 f41dae3ea564719411be4aa7cfd26c8595b2adaa data/projectex/recipes/final_star.json
+d61b796960de46cf78f23eb83388a19de94d3e12 data/projectex/recipes/knowledge_sharing_book.json
 830663b22f822469d95ee2e40d3f78e95468b7f1 data/projectex/recipes/matter/blue_h.json
 6c3eef950679ebeb6560be25a6c71c12ec249028 data/projectex/recipes/matter/blue_v.json
 3088b7cd948d6194df9e10282722888b6027f951 data/projectex/recipes/matter/cyan_h.json

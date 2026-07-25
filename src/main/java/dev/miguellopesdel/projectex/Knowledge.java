@@ -51,7 +51,25 @@ public final class Knowledge {
 	 */
 	public static Result teach(Player player, IKnowledgeProvider provider, ItemInfo source) {
 		ItemInfo reduced = NBTManager.getPersistentInfo(source);
+		Result result = add(player, provider, source, reduced);
 
+		if (result == Result.LEARNED) {
+			sync(player, provider, reduced, true);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Teaches without telling the client, for a caller about to teach a great many things at once.
+	 * That caller owes the player a {@link IKnowledgeProvider#sync(net.minecraft.server.level.ServerPlayer)}
+	 * afterwards; a packet per item would be thousands of them.
+	 */
+	public static Result teachQuietly(Player player, IKnowledgeProvider provider, ItemInfo source) {
+		return add(player, provider, source, NBTManager.getPersistentInfo(source));
+	}
+
+	private static Result add(Player player, IKnowledgeProvider provider, ItemInfo source, ItemInfo reduced) {
 		if (provider.hasKnowledge(reduced)) {
 			return Result.ALREADY_KNOWN;
 		}
@@ -60,12 +78,7 @@ public final class Knowledge {
 			return Result.REFUSED;
 		}
 
-		if (!provider.addKnowledge(reduced)) {
-			return Result.REFUSED;
-		}
-
-		sync(player, provider, reduced, true);
-		return Result.LEARNED;
+		return provider.addKnowledge(reduced) ? Result.LEARNED : Result.REFUSED;
 	}
 
 	public static boolean forget(Player player, IKnowledgeProvider provider, ItemStack stack) {

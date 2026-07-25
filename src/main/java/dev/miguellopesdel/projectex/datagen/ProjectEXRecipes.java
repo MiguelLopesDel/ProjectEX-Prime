@@ -47,6 +47,19 @@ public class ProjectEXRecipes extends RecipeProvider {
 		arcaneTablet(consumer);
 		alchemyTable(consumer);
 		alchemyChains(consumer);
+		knowledgeSharingBook(consumer);
+	}
+
+	private void knowledgeSharingBook(Consumer<FinishedRecipe> consumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXItems.KNOWLEDGE_SHARING_BOOK.get())
+				.pattern("RNR")
+				.pattern("NBN")
+				.pattern("RNR")
+				.define('R', ProjectEXItems.MATTER.get(Matter.VIOLET).get())
+				.define('B', Items.WRITABLE_BOOK)
+				.define('N', Tags.Items.NETHER_STARS)
+				.unlockedBy("has_violet_matter", has(ProjectEXItems.MATTER.get(Matter.VIOLET).get()))
+				.save(consumer);
 	}
 
 	private void alchemyTable(Consumer<FinishedRecipe> consumer) {
