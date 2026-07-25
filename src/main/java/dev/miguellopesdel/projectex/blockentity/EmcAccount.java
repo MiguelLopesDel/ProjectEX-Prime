@@ -2,6 +2,8 @@ package dev.miguellopesdel.projectex.blockentity;
 
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import moze_intel.projecte.api.capabilities.PECapabilities;
+import net.minecraft.Util;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -13,11 +15,9 @@ import java.util.UUID;
 /**
  * The EMC balance a link spends from and pays into.
  *
- * <p>This exists so the links do not talk to {@link IKnowledgeProvider} directly. In 1.12 the
- * mod carried its own reader for the save files of offline players, so that automation kept
- * producing while its owner was away. That reader is not ported yet, so right now an account
- * only exists while its owner is online. When it comes back it becomes a second implementation
- * of this interface, not a change to the links.
+ * <p>This exists so the links do not talk to {@link IKnowledgeProvider} directly: whether the
+ * owner is logged in decides where their balance lives, and nothing that spends EMC should have
+ * to care. Online it is their capability, offline it is their save file.
  */
 public interface EmcAccount {
 	BigInteger balance();
@@ -32,14 +32,15 @@ public interface EmcAccount {
 
 	@Nullable
 	static EmcAccount of(Level level, UUID owner) {
-		if (level == null || level.getServer() == null) {
+		if (level == null || level.getServer() == null || Util.NIL_UUID.equals(owner)) {
 			return null;
 		}
 
-		ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+		MinecraftServer server = level.getServer();
+		ServerPlayer player = server.getPlayerList().getPlayer(owner);
 
 		if (player == null) {
-			return null;
+			return new OfflineAccount(server, owner);
 		}
 
 		IKnowledgeProvider provider = player.getCapability(PECapabilities.KNOWLEDGE_CAPABILITY).orElse(null);
@@ -76,6 +77,38 @@ public interface EmcAccount {
 			if (provider.addKnowledge(stack)) {
 				provider.sync(player);
 			}
+		}
+	}
+
+	/**
+	 * The owner is away, so their balance is edited in their save file. Every operation costs
+	 * disk access, which is why the links only produce on their one second beat and not per tick.
+	 */
+	record OfflineAccount(MinecraftServer server, UUID owner) implements EmcAccount {
+		@Override
+		public BigInteger balance() {
+			return OfflineEmcStore.balanceOf(server, owner);
+		}
+
+		@Override
+		public boolean spend(BigInteger amount) {
+			BigInteger balance = balance();
+
+			if (balance.compareTo(amount) < 0) {
+				return false;
+			}
+
+			return OfflineEmcStore.setBalance(server, owner, balance.subtract(amount));
+		}
+
+		@Override
+		public void deposit(BigInteger amount) {
+			OfflineEmcStore.setBalance(server, owner, balance().add(amount));
+		}
+
+		@Override
+		public void learn(ItemStack stack) {
+			OfflineEmcStore.learn(server, owner, stack);
 		}
 	}
 }
