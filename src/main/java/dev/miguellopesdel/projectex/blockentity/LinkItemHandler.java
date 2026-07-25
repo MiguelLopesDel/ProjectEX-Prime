@@ -70,6 +70,14 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 		}
 
 		ItemStack template = outputs.get(slot - inputs.size());
+
+		// Only the server can price a template, since the owner's balance lives there. On the
+		// client the list holds whatever the server last sent for this slot, and it is shown
+		// as is; recomputing here would always come out empty.
+		if (isClient()) {
+			return template;
+		}
+
 		int affordable = affordable(template, template.getMaxStackSize());
 		return affordable <= 0 ? ItemStack.EMPTY : ItemHandlerHelper.copyStackWithSize(template, affordable);
 	}
@@ -79,6 +87,13 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 		if (slot < inputs.size()) {
 			inputs.set(slot, stack);
 			link.setChanged();
+			return;
+		}
+
+		// Slot syncing from the server lands here. Dropping it used to leave the client with
+		// empty output slots however much the owner could afford.
+		if (isClient()) {
+			outputs.set(slot - inputs.size(), stack);
 		}
 	}
 
@@ -183,6 +198,10 @@ public class LinkItemHandler implements IItemHandlerModifiable {
 
 		BigInteger count = account.balance().divide(BigInteger.valueOf(value));
 		return count.min(BigInteger.valueOf(Math.min(limit, maxOut))).intValueExact();
+	}
+
+	private boolean isClient() {
+		return link.getLevel() != null && link.getLevel().isClientSide();
 	}
 
 	private long valueOf(ItemStack stack) {
