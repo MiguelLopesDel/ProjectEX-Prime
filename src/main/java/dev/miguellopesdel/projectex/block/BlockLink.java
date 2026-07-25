@@ -18,6 +18,12 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraftforge.network.NetworkHooks;
+import dev.miguellopesdel.projectex.gui.ContainerLink;
 import javax.annotation.Nullable;
 
 public abstract class BlockLink extends Block implements EntityBlock {
@@ -37,17 +43,35 @@ public abstract class BlockLink extends Block implements EntityBlock {
 
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof TileLink link) {
-			player.displayClientMessage(Component.literal(link.ownerBuffer.ownerName), true);
+		if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer
+				&& level.getBlockEntity(pos) instanceof TileLink link) {
+			// The energy link has no slots at all, so it keeps just naming its owner.
+			if (link.items().getSlots() == 0) {
+				player.displayClientMessage(Component.literal(link.ownerBuffer.ownerName), true);
+			} else {
+				NetworkHooks.openScreen(serverPlayer, new LinkMenuProvider(link), buffer -> buffer.writeBlockPos(pos));
+			}
 		}
 
-		return super.use(state, level, pos, player, hand, hit);
+		return InteractionResult.sidedSuccess(level.isClientSide());
 	}
 
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
 		if (entity != null && level.getBlockEntity(pos) instanceof TileLink link) {
 			link.setOwner(entity);
+		}
+	}
+
+	private record LinkMenuProvider(TileLink link) implements MenuProvider {
+		@Override
+		public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+			return new ContainerLink(windowId, playerInventory, link);
+		}
+
+		@Override
+		public Component getDisplayName() {
+			return Component.literal(link.ownerBuffer.ownerName);
 		}
 	}
 }

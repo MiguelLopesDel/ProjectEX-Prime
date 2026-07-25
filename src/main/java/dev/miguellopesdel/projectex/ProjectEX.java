@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex;
 
 import dev.miguellopesdel.projectex.block.ProjectEXBlocks;
+import dev.miguellopesdel.projectex.gui.ProjectEXMenus;
 import dev.miguellopesdel.projectex.item.ProjectEXItems;
 import dev.miguellopesdel.projectex.blockentity.ProjectEXBlockEntities;
 import net.minecraft.core.Direction;
@@ -38,6 +39,7 @@ public class ProjectEX {
 		ProjectEXBlocks.REGISTRY.register(modBus);
 		ProjectEXItems.REGISTRY.register(modBus);
 		ProjectEXBlockEntities.REGISTRY.register(modBus);
+		ProjectEXMenus.REGISTRY.register(modBus);
 		TABS.register(modBus);
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ProjectEXConfig.COMMON_SPEC);
