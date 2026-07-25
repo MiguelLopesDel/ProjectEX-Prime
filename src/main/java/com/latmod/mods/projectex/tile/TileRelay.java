@@ -1,151 +1,163 @@
 package com.latmod.mods.projectex.tile;
 
-import com.latmod.mods.projectex.block.EnumTier;
-import moze_intel.projecte.api.tile.IEmcAcceptor;
-import moze_intel.projecte.api.tile.IEmcProvider;
-import moze_intel.projecte.gameObjs.tiles.RelayMK1Tile;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
+import com.latmod.mods.projectex.ProjectEX;
+import com.latmod.mods.projectex.block.BlockRelay;
+import moze_intel.projecte.api.capabilities.PECapabilities;
+import moze_intel.projecte.api.capabilities.block_entity.IEmcStorage;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * @author LatvianModder
+ * Buffers EMC and forwards it to adjacent non-relay storages, up to its tier's transfer rate.
  */
-public class TileRelay extends TileEntity implements ITickable, IEmcAcceptor, IEmcProvider
-{
-	public static final IEmcAcceptor[] TEMP = new IEmcAcceptor[6];
+public class TileRelay extends BlockEntity implements IEmcStorage {
+	public int tick = 0;
+	public long storedEMC = 0L;
+	private LazyOptional<IEmcStorage> emcStorageCapability;
 
-	public static int mod(int i, int n)
-	{
-		i = i % n;
-		return i < 0 ? i + n : i;
-	}
-
-	public long stored = 0L;
-	private boolean isDirty = false;
-
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-	{
-		nbt.setLong("stored_emc", stored);
-		return super.writeToNBT(nbt);
+	public TileRelay(BlockPos pos, BlockState state) {
+		super(ProjectEXBlockEntities.RELAY.get(), pos, state);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt)
-	{
-		stored = nbt.getLong("stored_emc");
-		super.readFromNBT(nbt);
+	public void load(CompoundTag tag) {
+		super.load(tag);
+		tick = tag.getByte("Tick") & 0xFF;
+		storedEMC = tag.getLong("StoredEMC");
 	}
 
 	@Override
-	public void onLoad()
-	{
-		if (world.isRemote)
-		{
-			world.tickableTileEntities.remove(this);
-		}
-
-		validate();
+	protected void saveAdditional(CompoundTag tag) {
+		super.saveAdditional(tag);
+		tag.putByte("Tick", (byte) tick);
+		tag.putLong("StoredEMC", storedEMC);
 	}
 
-	@Override
-	public void update()
-	{
-		if (world.isRemote || stored <= 0L || world.getTotalWorldTime() % 20L != mod(hashCode(), 20))
-		{
+	public void tick() {
+		if (level == null || storedEMC <= 0L) {
 			return;
 		}
 
-		int tempSize = 0;
+		tick++;
 
-		for (int i = 0; i < 6; i++)
-		{
-			TEMP[i] = null;
-			TileEntity tileEntity = world.getTileEntity(pos.offset(EnumFacing.VALUES[i]));
+		if (tick < 20) {
+			return;
+		}
 
-			if (tileEntity instanceof IEmcAcceptor && !(tileEntity instanceof TileRelay) && !(tileEntity instanceof RelayMK1Tile))
-			{
-				TEMP[i] = (IEmcAcceptor) tileEntity;
-				tempSize++;
+		tick = 0;
+
+		if (!(getBlockState().getBlock() instanceof BlockRelay relay)) {
+			return;
+		}
+
+		List<IEmcStorage> targets = new ArrayList<>(1);
+
+		for (Direction direction : ProjectEX.DIRECTIONS) {
+			BlockEntity blockEntity = level.getBlockEntity(worldPosition.relative(direction));
+			IEmcStorage storage = blockEntity == null ? null
+					: blockEntity.getCapability(PECapabilities.EMC_STORAGE_CAPABILITY, direction.getOpposite()).orElse(null);
+
+			if (storage != null && !storage.isRelay() && storage.insertEmc(1L, EmcAction.SIMULATE) > 0L) {
+				targets.add(storage);
 			}
 		}
 
-		if (tempSize > 0)
-		{
-			long s = (long) (Math.min(stored / tempSize, Math.min(Long.MAX_VALUE, EnumTier.byMeta(getBlockMetadata()).properties.relay_transfer)));
+		if (!targets.isEmpty() && storedEMC >= targets.size()) {
+			long share = Math.min(storedEMC / targets.size(), relay.matter.relayTransfer);
 
-			for (int i = 0; i < 6; i++)
-			{
-				if (TEMP[i] != null)
-				{
-					long a = TEMP[i].acceptEMC(EnumFacing.VALUES[i].getOpposite(), s);
+			for (IEmcStorage storage : targets) {
+				long inserted = storage.insertEmc(share, EmcAction.EXECUTE);
 
-					if (a > 0L)
-					{
-						stored -= a;
-						markDirty();
+				if (inserted > 0L) {
+					storedEMC -= inserted;
+					setChanged();
+
+					if (storedEMC < share) {
+						break;
 					}
 				}
 			}
 		}
+	}
 
-		if (isDirty)
-		{
-			isDirty = false;
-			world.markChunkDirty(pos, this);
+	public void addBonus() {
+		if (getBlockState().getBlock() instanceof BlockRelay relay) {
+			insertEmc(relay.matter.relayBonus, EmcAction.EXECUTE);
 		}
 	}
 
 	@Override
-	public void markDirty()
-	{
-		isDirty = true;
+	public long getStoredEmc() {
+		return storedEMC;
 	}
 
 	@Override
-	public long acceptEMC(EnumFacing facing, long v)
-	{
-		long v1 = Math.min(getMaximumEmc() - stored, v);
-
-		if (v1 > 0L)
-		{
-			stored += v1;
-			markDirty();
-		}
-
-		return v1;
-	}
-
-	@Override
-	public long provideEMC(EnumFacing facing, long v)
-	{
-		long v1 = Math.min(stored, v);
-
-		if (v1 > 0L)
-		{
-			stored -= v1;
-			markDirty();
-		}
-
-		return v1;
-	}
-
-	@Override
-	public long getStoredEmc()
-	{
-		return stored;
-	}
-
-	@Override
-	public long getMaximumEmc()
-	{
+	public long getMaximumEmc() {
 		return Long.MAX_VALUE;
 	}
 
-	public void addRelayBonus(EnumFacing facing)
-	{
-		acceptEMC(facing, (long) EnumTier.byMeta(getBlockMetadata()).properties.relay_bonus);
+	@Override
+	public long extractEmc(long emc, EmcAction action) {
+		long extracted = Math.min(storedEMC, emc);
+
+		if (extracted < 0L) {
+			return insertEmc(-extracted, action);
+		} else if (action.execute()) {
+			storedEMC -= extracted;
+		}
+
+		return extracted;
+	}
+
+	@Override
+	public long insertEmc(long emc, EmcAction action) {
+		if (emc < 0L) {
+			return extractEmc(-emc, action);
+		}
+
+		if (action.execute()) {
+			storedEMC += emc;
+		}
+
+		return emc;
+	}
+
+	@Override
+	public boolean isRelay() {
+		return true;
+	}
+
+	@Override
+	@Nonnull
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+		if (cap == PECapabilities.EMC_STORAGE_CAPABILITY) {
+			if (emcStorageCapability == null || !emcStorageCapability.isPresent()) {
+				emcStorageCapability = LazyOptional.of(() -> this);
+			}
+
+			return emcStorageCapability.cast();
+		}
+
+		return super.getCapability(cap, side);
+	}
+
+	@Override
+	public void invalidateCaps() {
+		super.invalidateCaps();
+
+		if (emcStorageCapability != null) {
+			emcStorageCapability.invalidate();
+			emcStorageCapability = null;
+		}
 	}
 }

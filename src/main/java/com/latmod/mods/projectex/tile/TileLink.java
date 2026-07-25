@@ -1,481 +1,140 @@
 package com.latmod.mods.projectex.tile;
 
-import com.latmod.mods.projectex.ProjectEXConfig;
-import com.latmod.mods.projectex.ProjectEXUtils;
-import com.latmod.mods.projectex.integration.PersonalEMC;
-import moze_intel.projecte.api.ProjectEAPI;
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
-import moze_intel.projecte.api.event.PlayerAttemptCondenserSetEvent;
-import moze_intel.projecte.api.tile.IEmcAcceptor;
-import moze_intel.projecte.config.ProjectEConfig;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraftforge.common.MinecraftForge;
+import moze_intel.projecte.api.capabilities.PECapabilities;
+import moze_intel.projecte.api.capabilities.block_entity.IEmcStorage;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
-
+import net.minecraftforge.common.util.LazyOptional;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
+
+import java.math.BigInteger;
 import java.util.UUID;
 
 /**
- * @author LatvianModder
+ * Base of the EMC links: accepts EMC from any side and deposits it into its owner's
+ * transmutation knowledge, buffering it while the owner is offline.
+ *
+ * <p>The item input and output sides of the links live in their menus and are part of the GUI
+ * phase of the port; see the README.
  */
-public class TileLink extends TileEntity implements IItemHandlerModifiable, ITickable, IEmcAcceptor
-{
-	public UUID owner = new UUID(0L, 0L);
-	public String name = "";
-	private boolean isDirty = false;
-	public final ItemStack[] inputSlots, outputSlots;
-	public long storedEMC = 0L;
+public class TileLink extends BlockEntity implements IEmcStorage {
+	public UUID owner = Util.NIL_UUID;
+	public String ownerName = "";
+	public int tick = 0;
+	public BigInteger storedEMC = BigInteger.ZERO;
+	private LazyOptional<IEmcStorage> emcStorageCapability;
 
-	public TileLink(int in, int out)
-	{
-		inputSlots = new ItemStack[in];
-		outputSlots = new ItemStack[out];
-		Arrays.fill(inputSlots, ItemStack.EMPTY);
-		Arrays.fill(outputSlots, ItemStack.EMPTY);
-	}
-
-	public boolean learnItems()
-	{
-		return false;
+	public TileLink(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+		super(type, pos, state);
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt)
-	{
-		owner = nbt.getUniqueId("owner");
-		name = nbt.getString("name");
-		double storedEMC1 = nbt.getDouble("emc");
-		storedEMC = storedEMC1 > Long.MAX_VALUE ? Long.MAX_VALUE : (long) storedEMC1;
-
-		Arrays.fill(inputSlots, ItemStack.EMPTY);
-		Arrays.fill(outputSlots, ItemStack.EMPTY);
-
-		NBTTagList inputList = nbt.getTagList("input", Constants.NBT.TAG_COMPOUND);
-
-		for (int i = 0; i < inputList.tagCount(); i++)
-		{
-			NBTTagCompound nbt1 = inputList.getCompoundTagAt(i);
-			inputSlots[nbt1.getByte("Slot")] = new ItemStack(nbt1);
-		}
-
-		NBTTagList outputList = nbt.getTagList("output", Constants.NBT.TAG_COMPOUND);
-
-		if (outputList.isEmpty())
-		{
-			outputSlots[0] = ProjectEXUtils.fixOutput(new ItemStack(nbt.getCompoundTag("output")));
-		}
-		else
-		{
-			for (int i = 0; i < outputList.tagCount(); i++)
-			{
-				NBTTagCompound nbt1 = outputList.getCompoundTagAt(i);
-				outputSlots[nbt1.getByte("Slot")] = ProjectEXUtils.fixOutput(new ItemStack(nbt1));
-			}
-		}
-
-		super.readFromNBT(nbt);
+	public void load(CompoundTag tag) {
+		super.load(tag);
+		owner = tag.hasUUID("Owner") ? tag.getUUID("Owner") : Util.NIL_UUID;
+		ownerName = tag.getString("OwnerName");
+		tick = tag.getByte("Tick") & 0xFF;
+		String emc = tag.getString("StoredEMC");
+		storedEMC = emc.isEmpty() || emc.equals("0") ? BigInteger.ZERO : new BigInteger(emc);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-	{
-		nbt.setUniqueId("owner", owner);
-		nbt.setString("name", name);
-
-		if (storedEMC > 0D)
-		{
-			nbt.setDouble("emc", storedEMC);
-		}
-
-		NBTTagList outputList = new NBTTagList();
-
-		for (int i = 0; i < outputSlots.length; i++)
-		{
-			outputSlots[i].setCount(1);
-
-			if (!outputSlots[i].isEmpty())
-			{
-				NBTTagCompound nbt1 = outputSlots[i].serializeNBT();
-				nbt1.setByte("Slot", (byte) i);
-				outputList.appendTag(nbt1);
-			}
-		}
-
-		nbt.setTag("output", outputList);
-
-		NBTTagList inputList = new NBTTagList();
-
-		for (int i = 0; i < inputSlots.length; i++)
-		{
-			if (!inputSlots[i].isEmpty())
-			{
-				NBTTagCompound nbt1 = inputSlots[i].serializeNBT();
-				nbt1.setByte("Slot", (byte) i);
-				inputList.appendTag(nbt1);
-			}
-		}
-
-		nbt.setTag("input", inputList);
-		return super.writeToNBT(nbt);
+	protected void saveAdditional(CompoundTag tag) {
+		super.saveAdditional(tag);
+		tag.putUUID("Owner", owner);
+		tag.putString("OwnerName", ownerName);
+		tag.putByte("Tick", (byte) tick);
+		tag.putString("StoredEMC", storedEMC.toString());
 	}
 
-	@Override
-	public NBTTagCompound getUpdateTag()
-	{
-		return writeToNBT(new NBTTagCompound());
-	}
-
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket()
-	{
-		return new SPacketUpdateTileEntity(pos, 0, writeToNBT(new NBTTagCompound()));
-	}
-
-	@Override
-	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt)
-	{
-		readFromNBT(pkt.getNbtCompound());
-	}
-
-	@Override
-	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing side)
-	{
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, side);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing side)
-	{
-		return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ? (T) this : super.getCapability(capability, side);
-	}
-
-	@Override
-	public int getSlots()
-	{
-		return inputSlots.length + outputSlots.length;
-	}
-
-	public boolean hasOwner()
-	{
-		return owner.getLeastSignificantBits() != 0L || owner.getMostSignificantBits() != 0L;
-	}
-
-	@Override
-	public ItemStack getStackInSlot(int slot)
-	{
-		if (slot < inputSlots.length)
-		{
-			return inputSlots[slot];
-		}
-
-		if (ProjectEXConfig.general.emc_link_max_out <= 0)
-		{
-			return ItemStack.EMPTY;
-		}
-
-		int index = slot - inputSlots.length;
-
-		if (world.isRemote || !hasOwner())
-		{
-			return ItemStack.EMPTY;
-		}
-
-		outputSlots[index].setCount(1);
-
-		if (outputSlots[index].isEmpty())
-		{
-			return ItemStack.EMPTY;
-		}
-
-		long value = ProjectEAPI.getEMCProxy().getValue(outputSlots[index]);
-
-		if (value > 0L)
-		{
-			int c = getCount(PersonalEMC.get(world, owner), value, ProjectEXConfig.general.emc_link_max_out);
-
-			if (c <= 0)
-			{
-				return ItemStack.EMPTY;
-			}
-
-			outputSlots[index].setCount(c);
-			return outputSlots[index];
-		}
-
-		return ItemStack.EMPTY;
-	}
-
-	@Override
-	public void setStackInSlot(int slot, ItemStack stack)
-	{
-		if (slot < inputSlots.length)
-		{
-			inputSlots[slot] = stack;
-			markDirty();
-		}
-	}
-
-	@Override
-	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate)
-	{
-		if (slot >= inputSlots.length || !ProjectEAPI.getEMCProxy().hasValue(stack))
-		{
-			return stack;
-		}
-
-		int limit = stack.getMaxStackSize();
-
-		if (!inputSlots[slot].isEmpty())
-		{
-			if (!ItemHandlerHelper.canItemStacksStack(stack, inputSlots[slot]))
-			{
-				return stack;
-			}
-
-			limit -= inputSlots[slot].getCount();
-		}
-
-		if (limit <= 0)
-		{
-			return stack;
-		}
-
-		boolean reachedLimit = stack.getCount() > limit;
-
-		if (!simulate)
-		{
-			if (inputSlots[slot].isEmpty())
-			{
-				inputSlots[slot] = reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack;
-			}
-			else
-			{
-				inputSlots[slot].grow(reachedLimit ? limit : stack.getCount());
-			}
-
-			markDirty();
-		}
-
-		return reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, stack.getCount() - limit) : ItemStack.EMPTY;
-	}
-
-	@Override
-	public void markDirty()
-	{
-		isDirty = true;
-	}
-
-	@Override
-	public boolean isItemValid(int slot, ItemStack stack)
-	{
-		return slot < inputSlots.length && ProjectEAPI.getEMCProxy().hasValue(stack);
-	}
-
-	@Override
-	public ItemStack extractItem(int slot, int amount, boolean simulate)
-	{
-		if (slot < inputSlots.length || amount <= 0 || world.isRemote || !hasOwner())
-		{
-			return ItemStack.EMPTY;
-		}
-
-		int index = slot - inputSlots.length;
-		outputSlots[index].setCount(1);
-
-		if (outputSlots[index].isEmpty())
-		{
-			return ItemStack.EMPTY;
-		}
-
-		long value = ProjectEAPI.getEMCProxy().getValue(outputSlots[index]);
-
-		if (value <= 0L)
-		{
-			return ItemStack.EMPTY;
-		}
-
-		IKnowledgeProvider knowledgeProvider = null;
-
-		if (storedEMC < value && ((knowledgeProvider = PersonalEMC.get(world, owner)) == null || knowledgeProvider.getEmc() < value))
-		{
-			return ItemStack.EMPTY;
-		}
-
-		ItemStack stack = outputSlots[index].copy();
-		stack.setCount(getCount(knowledgeProvider, value, Math.min(amount, outputSlots[index].getMaxStackSize())));
-
-		if (stack.getCount() >= 1)
-		{
-			if (!simulate)
-			{
-				long v = value * stack.getCount();
-
-				if (storedEMC >= v)
-				{
-					storedEMC -= v;
-					markDirty();
-				}
-				else if (knowledgeProvider != null)
-				{
-					PersonalEMC.remove(knowledgeProvider, v);
-				}
-			}
-
-			return stack;
-		}
-
-		return ItemStack.EMPTY;
-	}
-
-	@Override
-	public int getSlotLimit(int slot)
-	{
-		return slot < inputSlots.length ? 64 : ProjectEXConfig.general.emc_link_max_out;
-	}
-
-	@Override
-	public void onLoad()
-	{
-		if (world.isRemote)
-		{
-			world.tickableTileEntities.remove(this);
-		}
-
-		validate();
-	}
-
-	@Override
-	public void update()
-	{
-		if (world.isRemote)
-		{
+	public void tick() {
+		if (level == null || level.getServer() == null) {
 			return;
 		}
 
-		if (hasOwner())
-		{
-			IKnowledgeProvider knowledgeProvider = PersonalEMC.get(world, owner);
-			boolean syncKnowledge = false;
+		tick++;
 
-			for (int i = 0; i < inputSlots.length; i++)
-			{
-				if (!inputSlots[i].isEmpty())
-				{
-					double value = ProjectEAPI.getEMCProxy().getValue(inputSlots[i]);
-
-					if (value > 0D)
-					{
-						if (knowledgeProvider != null && learnItems())
-						{
-							syncKnowledge = knowledgeProvider.addKnowledge(ProjectEXUtils.fixOutput(inputSlots[i]));
-						}
-
-						storedEMC += (double) inputSlots[i].getCount() * value * ProjectEConfig.difficulty.covalenceLoss;
-						inputSlots[i] = ItemStack.EMPTY;
-						markDirty();
-					}
-				}
-			}
-
-			if (knowledgeProvider != null)
-			{
-				if (storedEMC > 0D)
-				{
-					PersonalEMC.add(knowledgeProvider, storedEMC);
-					storedEMC = 0L;
-					markDirty();
-				}
-
-				if (syncKnowledge)
-				{
-					EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(owner);
-
-					if (player != null)
-					{
-						knowledgeProvider.sync(player);
-					}
-				}
-			}
+		if (tick < 20) {
+			return;
 		}
 
-		if (isDirty)
-		{
-			isDirty = false;
-			world.markChunkDirty(pos, this);
-		}
-	}
+		tick = 0;
 
-	public int getCount(@Nullable IKnowledgeProvider knowledgeProvider, long value, int limit)
-	{
-		long emc = knowledgeProvider == null ? storedEMC : knowledgeProvider.getEmc();
-
-		if (emc < value)
-		{
-			return 0;
+		if (storedEMC.equals(BigInteger.ZERO)) {
+			return;
 		}
 
-		return (int) (Math.min(limit, emc / value));
+		ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+		IKnowledgeProvider provider = player == null ? null
+				: player.getCapability(PECapabilities.KNOWLEDGE_CAPABILITY).orElse(null);
+
+		if (provider != null) {
+			provider.setEmc(provider.getEmc().add(storedEMC));
+			storedEMC = BigInteger.ZERO;
+			setChanged();
+			provider.syncEmc(player);
+		}
 	}
 
 	@Override
-	public long acceptEMC(EnumFacing facing, long v)
-	{
-		if (!world.isRemote)
-		{
-			storedEMC += v;
-			markDirty();
-		}
-
-		return v;
+	public long getStoredEmc() {
+		return 0L;
 	}
 
 	@Override
-	public long getStoredEmc()
-	{
-		return storedEMC;
-	}
-
-	@Override
-	public long getMaximumEmc()
-	{
+	public long getMaximumEmc() {
 		return Long.MAX_VALUE;
 	}
 
-	public boolean setOutputStack(EntityPlayer player, int slot, ItemStack stack, boolean addKnowledge)
-	{
-		stack = ProjectEXUtils.fixOutput(stack);
-		IKnowledgeProvider knowledgeProvider = PersonalEMC.get(player);
+	@Override
+	public long extractEmc(long emc, EmcAction action) {
+		return emc < 0L ? insertEmc(-emc, action) : 0L;
+	}
 
-		if (addKnowledge)
-		{
-			ProjectEXUtils.addKnowledge(player, knowledgeProvider, stack);
+	@Override
+	public long insertEmc(long emc, EmcAction action) {
+		if (emc <= 0L) {
+			return 0L;
 		}
 
-		if (ProjectEAPI.getEMCProxy().hasValue(stack) && (addKnowledge || knowledgeProvider.hasKnowledge(stack)))
-		{
-			if (!MinecraftForge.EVENT_BUS.post(new PlayerAttemptCondenserSetEvent(player, stack)))
-			{
-				outputSlots[slot] = stack;
-				markDirty();
+		if (action.execute()) {
+			storedEMC = storedEMC.add(BigInteger.valueOf(emc));
+			setChanged();
+		}
+
+		return emc;
+	}
+
+	@Override
+	@Nonnull
+	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+		if (cap == PECapabilities.EMC_STORAGE_CAPABILITY) {
+			if (emcStorageCapability == null || !emcStorageCapability.isPresent()) {
+				emcStorageCapability = LazyOptional.of(() -> this);
 			}
 
-			return true;
+			return emcStorageCapability.cast();
 		}
 
-		return false;
+		return super.getCapability(cap, side);
+	}
+
+	@Override
+	public void invalidateCaps() {
+		super.invalidateCaps();
+
+		if (emcStorageCapability != null) {
+			emcStorageCapability.invalidate();
+			emcStorageCapability = null;
+		}
 	}
 }

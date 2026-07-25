@@ -1,18 +1,27 @@
 package com.latmod.mods.projectex.block;
 
 import com.latmod.mods.projectex.tile.TileLinkMK1;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import javax.annotation.Nullable;
 
-/**
- * @author LatvianModder
- */
-public class BlockLinkMK1 extends BlockLink
-{
+import java.util.List;
+
+public class BlockLinkMK1 extends BlockLink {
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state)
-	{
-		return new TileLinkMK1();
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new TileLinkMK1(pos, state);
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> list, TooltipFlag flag) {
+		super.appendHoverText(stack, level, list, flag);
+		list.add(Component.translatable("block.projectex.personal_link.tooltip").withStyle(ChatFormatting.GRAY));
 	}
 }

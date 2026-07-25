@@ -1,54 +1,36 @@
 package com.latmod.mods.projectex.item;
 
-import com.latmod.mods.projectex.block.EnumTier;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
-
+import com.latmod.mods.projectex.Matter;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
- * @author LatvianModder
+ * Nine collectors of one tier compressed into a single item, the intermediate step towards
+ * that tier's power flower. It does not collect EMC on its own.
  */
-public class ItemCompressedCollector extends Item
-{
-	public ItemCompressedCollector()
-	{
-		setHasSubtypes(true);
+public class ItemCompressedCollector extends Item {
+	public final Matter matter;
+
+	public ItemCompressedCollector(Matter matter) {
+		super(new Properties());
+		this.matter = matter;
 	}
 
 	@Override
-	public boolean hasEffect(ItemStack stack)
-	{
+	public boolean isFoil(ItemStack stack) {
 		return true;
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack stack)
-	{
-		return ProjectEXItems.COLLECTOR.getTranslationKey(stack);
-	}
-
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-	{
-		if (isInCreativeTab(tab))
-		{
-			for (EnumTier tier : EnumTier.VALUES)
-			{
-				items.add(new ItemStack(this, 1, tier.ordinal()));
-			}
-		}
-	}
-
-	@Override
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag)
-	{
-		tooltip.add(I18n.format("tile.projectex.collector.compressed"));
+	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> list, TooltipFlag flag) {
+		super.appendHoverText(stack, level, list, flag);
+		list.add(Component.translatable("item.projectex.compressed_collector.tooltip").withStyle(ChatFormatting.GRAY));
 	}
 }

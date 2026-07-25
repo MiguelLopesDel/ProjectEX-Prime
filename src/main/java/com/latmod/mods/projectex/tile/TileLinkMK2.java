@@ -1,18 +1,10 @@
 package com.latmod.mods.projectex.tile;
 
-/**
- * @author LatvianModder
- */
-public class TileLinkMK2 extends TileLink
-{
-	public TileLinkMK2()
-	{
-		super(1, 9);
-	}
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 
-	@Override
-	public boolean learnItems()
-	{
-		return true;
+public class TileLinkMK2 extends TileLink {
+	public TileLinkMK2(BlockPos pos, BlockState state) {
+		super(ProjectEXBlockEntities.REFINED_LINK.get(), pos, state);
 	}
 }

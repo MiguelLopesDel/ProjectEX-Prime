@@ -1,77 +1,55 @@
 package com.latmod.mods.projectex.block;
 
-import com.latmod.mods.projectex.gui.ProjectEXGuiHandler;
 import com.latmod.mods.projectex.tile.TileLink;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import javax.annotation.Nullable;
 
-/**
- * @author LatvianModder
- */
-public class BlockLink extends Block
-{
-	public BlockLink()
-	{
-		super(Material.ROCK, MapColor.BLACK);
-		setHardness(2F);
+public abstract class BlockLink extends Block implements EntityBlock {
+	protected BlockLink() {
+		super(Properties.of().mapColor(MapColor.STONE).strength(5F).sound(SoundType.STONE).requiresCorrectToolForDrops());
 	}
 
 	@Override
-	public boolean hasTileEntity(IBlockState state)
-	{
-		return true;
-	}
-
-	@Override
-	public TileEntity createTileEntity(World world, IBlockState state)
-	{
-		return new TileLink(0, 0);
-	}
-
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
-		if (!world.isRemote)
-		{
-			TileEntity tileEntity = world.getTileEntity(pos);
-
-			if (tileEntity instanceof TileLink)
-			{
-				if (player.getUniqueID().equals(((TileLink) tileEntity).owner))
-				{
-					ProjectEXGuiHandler.open(player, ProjectEXGuiHandler.LINK, pos.getX(), pos.getY(), pos.getZ());
-				}
-				else
-				{
-					player.sendStatusMessage(new TextComponentString(((TileLink) tileEntity).name), true);
-				}
+	@Nullable
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return level.isClientSide() ? null : (l, pos, s, blockEntity) -> {
+			if (blockEntity instanceof TileLink link) {
+				link.tick();
 			}
+		};
+	}
+
+	@Override
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof TileLink link) {
+			player.displayClientMessage(Component.literal(link.ownerName), true);
 		}
 
-		return true;
+		return super.use(state, level, pos, player, hand, hit);
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-	{
-		TileEntity tileEntity = world.getTileEntity(pos);
-
-		if (tileEntity instanceof TileLink)
-		{
-			((TileLink) tileEntity).owner = placer.getUniqueID();
-			((TileLink) tileEntity).name = placer.getName();
-			tileEntity.markDirty();
+	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+		if (entity != null && level.getBlockEntity(pos) instanceof TileLink link) {
+			link.owner = entity.getUUID();
+			link.ownerName = entity.getScoreboardName();
+			link.setChanged();
 		}
 	}
 }

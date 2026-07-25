@@ -1,46 +1,55 @@
 package com.latmod.mods.projectex.block;
 
-import com.latmod.mods.projectex.ProjectEXConfig;
-import com.latmod.mods.projectex.gui.EMCFormat;
+import com.latmod.mods.projectex.Matter;
 import com.latmod.mods.projectex.tile.TileCollector;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
+import moze_intel.projecte.utils.TransmutationEMCFormatter;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.MapColor;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
-/**
- * @author LatvianModder
- */
-public class BlockCollector extends BlockTier
-{
-	public BlockCollector()
-	{
-		super(Material.GLASS, MapColor.YELLOW);
-		setHardness(0.3F);
+public class BlockCollector extends Block implements EntityBlock {
+	public final Matter matter;
+
+	public BlockCollector(Matter matter) {
+		super(Properties.of().mapColor(MapColor.STONE).strength(3.5F).sound(SoundType.STONE).requiresCorrectToolForDrops());
+		this.matter = matter;
 	}
 
 	@Override
-	public TileEntity createTileEntity(World world, IBlockState state)
-	{
-		return new TileCollector();
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new TileCollector(pos, state);
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World world, List<String> tooltip, ITooltipFlag flag)
-	{
-		ProjectEXConfig.BlockTier properties = EnumTier.byMeta(stack.getMetadata()).properties;
-		tooltip.add(I18n.format("tile.projectex.collector.tooltip"));
-		tooltip.add(I18n.format("tile.projectex.collector.emc_produced", TextFormatting.GREEN + EMCFormat.INSTANCE.format(properties.collector_output)));
+	@Nullable
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+		return level.isClientSide() ? null : (l, pos, s, blockEntity) -> {
+			if (blockEntity instanceof TileCollector collector) {
+				collector.tick();
+			}
+		};
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> list, TooltipFlag flag) {
+		super.appendHoverText(stack, level, list, flag);
+		list.add(Component.translatable("block.projectex.collector.tooltip").withStyle(ChatFormatting.GRAY));
+		list.add(Component.translatable("block.projectex.collector.emc_produced",
+				TransmutationEMCFormatter.formatEMC(matter.collectorOutput).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 	}
 }

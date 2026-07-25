@@ -1,323 +1,250 @@
 package com.latmod.mods.projectex;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import com.latmod.mods.projectex.client.EnumScreenPosition;
+import com.latmod.mods.projectex.client.EnumSearchType;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * @author LatvianModder
+ * Forge's annotation driven config is gone, so the 1.12 config classes are rebuilt on
+ * {@link ForgeConfigSpec}. The values themselves are unchanged.
  */
-@Mod.EventBusSubscriber(modid = ProjectEX.MOD_ID)
-@Config(modid = ProjectEX.MOD_ID, category = "")
-public class ProjectEXConfig
-{
-	@Config.LangKey("stat.generalButton")
-	public static final General general = new General();
+@Mod.EventBusSubscriber(modid = ProjectEX.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public final class ProjectEXConfig {
+	public static final Common COMMON;
+	public static final ForgeConfigSpec COMMON_SPEC;
+	public static final Client CLIENT;
+	public static final ForgeConfigSpec CLIENT_SPEC;
 
-	@Config.RequiresMcRestart
-	public static final ItemsConfig items = new ItemsConfig();
+	static {
+		Pair<Common, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(Common::new);
+		COMMON = common.getLeft();
+		COMMON_SPEC = common.getRight();
 
-	public static final Tiers tiers = new Tiers();
+		Pair<Client, ForgeConfigSpec> client = new ForgeConfigSpec.Builder().configure(Client::new);
+		CLIENT = client.getLeft();
+		CLIENT_SPEC = client.getRight();
+	}
 
-	private static class ItemKey
-	{
-		private Item item;
-		private int metadata;
+	private static List<StoneTableEntry> stoneTableWhitelistCache;
 
-		@Override
-		public int hashCode()
-		{
-			return item.hashCode() * 31 + metadata;
-		}
+	private ProjectEXConfig() {
+	}
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			if (obj instanceof ItemKey)
-			{
-				ItemKey key = (ItemKey) obj;
-				return item == key.item && metadata == key.metadata;
+	public static class Common {
+		public final ForgeConfigSpec.BooleanValue blacklistPowerFlowerFromWatch;
+		public final ForgeConfigSpec.BooleanValue finalStarCopyAnyItem;
+		public final ForgeConfigSpec.BooleanValue finalStarCopyNbt;
+		public final ForgeConfigSpec.IntValue finalStarUpdateInterval;
+		public final ForgeConfigSpec.LongValue emcLinkMaxOut;
+		public final ForgeConfigSpec.BooleanValue enableStoneTableWhitelist;
+		public final ForgeConfigSpec.ConfigValue<List<? extends String>> stoneTableWhitelist;
+
+		public final Map<Matter, TierValues> tiers = new EnumMap<>(Matter.class);
+
+		private Common(ForgeConfigSpec.Builder builder) {
+			builder.push("general");
+
+			blacklistPowerFlowerFromWatch = builder
+					.comment("With this enabled, Power Flowers will not be affected by the Watch of Flowing Time.")
+					.define("blacklist_power_flower_from_watch", true);
+
+			finalStarCopyAnyItem = builder
+					.comment("If set to false, the Final Star will only copy items that have an EMC value.")
+					.define("final_star_copy_any_item", true);
+
+			finalStarCopyNbt = builder
+					.comment("If set to false, copied items lose their NBT.")
+					.define("final_star_copy_nbt", false);
+
+			finalStarUpdateInterval = builder
+					.comment("Set to 0 to completely disable item copying.")
+					.defineInRange("final_star_update_interval", 20, 0, Integer.MAX_VALUE);
+
+			emcLinkMaxOut = builder
+					.comment("Max item count an EMC link will output.",
+							"0 disables item exporting from links and makes refined ones useless.",
+							"Reduce this if you are having problems with auto-crafting or similar things.")
+					.defineInRange("emc_link_max_out", 2000000000L, 0L, Long.MAX_VALUE);
+
+			enableStoneTableWhitelist = builder
+					.comment("The whitelist for the Stone Table is ignored unless this is set to true.")
+					.define("enable_stone_table_whitelist", false);
+
+			stoneTableWhitelist = builder
+					.comment("Items the Stone Table accepts. The 1.12 ore dictionary entries are item tags now:",
+							"prefix an entry with # for a tag, otherwise it is an item id.",
+							"Example: #forge:ingots or minecraft:flint")
+					.defineList("stone_table_whitelist", defaultStoneTableWhitelist(), o -> o instanceof String);
+
+			builder.pop();
+
+			builder.comment("EMC output of each tier. Power flower output is derived: collector_output * 18 + relay_bonus * 30.")
+					.push("tiers");
+
+			for (Matter matter : Matter.VALUES) {
+				builder.push(matter.id);
+				tiers.put(matter, new TierValues(builder, matter));
+				builder.pop();
 			}
 
-			return false;
-		}
-
-		@Override
-		public String toString()
-		{
-			return item.getRegistryName() + "@" + metadata;
+			builder.pop();
 		}
 	}
 
-	public static class General
-	{
-		@Config.Comment("Overrides default EMC formatter from ProjectE with custom one.")
-		public boolean override_emc_formatter = true;
+	public static class TierValues {
+		public final ForgeConfigSpec.LongValue collectorOutput;
+		public final ForgeConfigSpec.LongValue relayBonus;
+		public final ForgeConfigSpec.LongValue relayTransfer;
 
-		@Config.Comment("With this enabled, Power Flowers will not be affected by Watch of Flowing Time.")
-		public boolean blacklist_power_flower_from_watch = true;
+		private TierValues(ForgeConfigSpec.Builder builder, Matter matter) {
+			collectorOutput = builder.defineInRange("collector_output", matter.defaultCollectorOutput, 0L, Long.MAX_VALUE);
+			relayBonus = builder.defineInRange("relay_bonus", matter.defaultRelayBonus, 0L, Long.MAX_VALUE);
+			relayTransfer = builder.defineInRange("relay_transfer", matter.defaultRelayTransfer, 1L, Long.MAX_VALUE);
+		}
+	}
 
-		@Config.Comment("If set to false, it will only copy items with EMC value.")
-		public boolean final_star_copy_any_item = true;
+	public static class Client {
+		public final ForgeConfigSpec.EnumValue<EnumScreenPosition> emcScreenPosition;
+		public final ForgeConfigSpec.EnumValue<EnumSearchType> searchType;
 
-		@Config.Comment("If set to false, it will remove item NBT.")
-		public boolean final_star_copy_nbt = false;
+		private Client(ForgeConfigSpec.Builder builder) {
+			builder.push("general");
 
-		@Config.Comment("Set to 0 to completely disable itemc copying.")
-		@Config.RangeInt(min = 0)
-		public int final_star_update_interval = 20;
+			emcScreenPosition = builder
+					.comment("Where the personal EMC counter is drawn on screen.")
+					.defineEnum("emc_screen_position", EnumScreenPosition.TOP_LEFT);
 
-		@Config.Comment({
-				"Max item that will be displayed.",
-				"0 disables item exporting from links and makes refined ones useless.",
-				"Reduce this if you are having problems with auto-crafting or similar things."
-		})
-		public int emc_link_max_out = 2000000000;
+			searchType = builder
+					.comment("Behaviour of the search bar in the transmutation interfaces.")
+					.defineEnum("search_type", EnumSearchType.NORMAL);
 
-		@Config.Comment("The whitelist for Stone Table will be ignored unless this is set to true.")
-		public boolean enable_stone_table_whitelist = false;
+			builder.pop();
+		}
+	}
 
-		public String[] stone_table_whitelist = {
-				"oredict:ingot",
-				"oredict:gem",
-				"oredict:dust",
-				"oredict:nugget",
-				"oredict:block",
-				"oredict:ore",
+	/**
+	 * Copies the configured tier values into {@link Matter}, which is what the blocks read at
+	 * runtime, so a config reload takes effect without a restart.
+	 */
+	@SubscribeEvent
+	public static void onConfigLoad(ModConfigEvent event) {
+		if (event.getConfig().getSpec() != COMMON_SPEC) {
+			return;
+		}
 
-				"oredict:stone",
-				"oredict:cobblestone",
-				"oredict:sand",
-				"oredict:dirt",
-				"oredict:gravel",
-				"oredict:obsidian",
-				"oredict:netherrack",
-				"oredict:endstone",
+		for (Matter matter : Matter.VALUES) {
+			TierValues values = COMMON.tiers.get(matter);
+			matter.collectorOutput = values.collectorOutput.get();
+			matter.relayBonus = values.relayBonus.get();
+			matter.relayTransfer = values.relayTransfer.get();
+		}
 
-				"minecraft:coal@*",
+		stoneTableWhitelistCache = null;
+	}
+
+	public static boolean isStoneTableWhitelisted(ItemStack stack) {
+		if (!COMMON.enableStoneTableWhitelist.get()) {
+			return true;
+		}
+
+		if (stoneTableWhitelistCache == null) {
+			List<StoneTableEntry> entries = new ArrayList<>();
+
+			for (String s : COMMON.stoneTableWhitelist.get()) {
+				String trimmed = s.trim();
+
+				if (trimmed.isEmpty()) {
+					continue;
+				}
+
+				if (trimmed.startsWith("#")) {
+					ResourceLocation id = ResourceLocation.tryParse(trimmed.substring(1));
+
+					if (id != null) {
+						entries.add(new StoneTableEntry(TagKey.create(Registries.ITEM, id), null));
+					}
+				} else {
+					ResourceLocation id = ResourceLocation.tryParse(trimmed);
+					Item item = id == null ? null : ForgeRegistries.ITEMS.getValue(id);
+
+					if (item != null) {
+						entries.add(new StoneTableEntry(null, item));
+					}
+				}
+			}
+
+			stoneTableWhitelistCache = entries;
+		}
+
+		for (StoneTableEntry entry : stoneTableWhitelistCache) {
+			if (entry.matches(stack)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private record StoneTableEntry(TagKey<Item> tag, Item item) {
+		boolean matches(ItemStack stack) {
+			return tag == null ? stack.is(item) : stack.is(tag);
+		}
+	}
+
+	private static List<String> defaultStoneTableWhitelist() {
+		return List.of(
+				"#forge:ingots",
+				"#forge:gems",
+				"#forge:dusts",
+				"#forge:nuggets",
+				"#forge:storage_blocks",
+				"#forge:ores",
+
+				"#forge:stone",
+				"#forge:cobblestone",
+				"#forge:sand",
+				"#minecraft:dirt",
+				"#forge:gravel",
+				"#forge:obsidian",
+				"#forge:netherrack",
+				"#forge:end_stones",
+
+				"minecraft:coal",
+				"minecraft:charcoal",
 				"minecraft:flint",
 				"minecraft:clay_ball",
 
-				"oredict:dye",
-				"oredict:string",
-				"oredict:leather",
-				"oredict:sugercane",
-				"oredict:feather",
-				"oredict:gunpowder",
+				"#forge:dyes",
+				"#forge:string",
+				"#forge:leather",
+				"#forge:crops/sugarcane",
+				"#forge:feathers",
+				"#forge:gunpowder",
 				"minecraft:wheat_seeds",
 
-				"oredict:logWood",
-				"oredict:treeSapling",
-				"oredict:blockGlassColorless",
+				"#" + ItemTags.LOGS.location(),
+				"#" + ItemTags.SAPLINGS.location(),
+				"#forge:glass/colorless",
 
-				"oredict:enderpearl",
+				"#forge:ender_pearls",
 				"minecraft:blaze_rod",
-				"minecraft:ghast_tear",
-		};
-
-		private HashSet<ItemKey> stoneTableItemList = null;
-		private HashMap<ItemKey, Boolean> stoneTableCache = null;
-
-		public boolean isStoneTableWhitelisted(ItemStack stack)
-		{
-			if (!enable_stone_table_whitelist)
-			{
-				return true;
-			}
-
-			if (stoneTableItemList == null)
-			{
-				stoneTableItemList = new HashSet<>();
-				HashMap<String, HashSet<ItemKey>> oreDict = new HashMap<>();
-
-				for (String s : OreDictionary.getOreNames())
-				{
-					HashSet<ItemKey> set = new HashSet<>();
-
-					for (ItemStack stack1 : OreDictionary.getOres(s))
-					{
-						Item item = stack1.getItem();
-						ItemKey key = new ItemKey();
-						key.item = item;
-						key.metadata = stack1.getMetadata();
-						set.add(key);
-					}
-
-					oreDict.put(s, set);
-				}
-
-				for (String s : general.stone_table_whitelist)
-				{
-					String[] s1 = s.trim().split("@", 2);
-
-					if (s1[0].isEmpty())
-					{
-						continue;
-					}
-
-					if (s1.length == 1 && s1[0].startsWith("oredict:"))
-					{
-						String s2 = s1[0].substring(8);
-
-						if (s2.isEmpty())
-						{
-							continue;
-						}
-
-						for (Map.Entry<String, HashSet<ItemKey>> entry : oreDict.entrySet())
-						{
-							if (!entry.getValue().isEmpty() && entry.getKey().startsWith(s2))
-							{
-								stoneTableItemList.addAll(entry.getValue());
-							}
-						}
-					}
-					else
-					{
-						Item item = Item.getByNameOrId(s1[0]);
-
-						if (item != null && item != Items.AIR)
-						{
-							ItemKey key = new ItemKey();
-							key.item = item;
-							key.metadata = s1.length == 1 ? 0 : s1[1].equals("*") ? OreDictionary.WILDCARD_VALUE : Integer.parseInt(s1[1]);
-							stoneTableItemList.add(key);
-						}
-					}
-				}
-			}
-
-			if (stoneTableCache == null)
-			{
-				stoneTableCache = new HashMap<>();
-			}
-
-			ItemKey key = new ItemKey();
-			key.item = stack.getItem();
-			key.metadata = stack.getMetadata();
-			Boolean b = stoneTableCache.get(key);
-
-			if (b == null)
-			{
-				b = false;
-
-				for (ItemKey key1 : stoneTableItemList)
-				{
-					if (key.item == key1.item && (key.metadata == key1.metadata || key1.metadata == OreDictionary.WILDCARD_VALUE))
-					{
-						b = true;
-						break;
-					}
-				}
-
-				stoneTableCache.put(key, b);
-			}
-
-			return b;
-		}
-	}
-
-	public static class Tiers
-	{
-		public final BlockTier basic = new BlockTier(4, 1, 64);
-		public final BlockTier dark = new BlockTier(12, 3, 192);
-		public final BlockTier red = new BlockTier(40, 10, 640);
-		public final BlockTier magenta = new BlockTier(160, 40, 2560);
-		public final BlockTier pink = new BlockTier(640, 150, 10240);
-		public final BlockTier purple = new BlockTier(2560, 750, 40960);
-		public final BlockTier violet = new BlockTier(10240, 3750, 163840);
-		public final BlockTier blue = new BlockTier(40960, 15000, 655360);
-		public final BlockTier cyan = new BlockTier(163840, 60000, 2621440);
-		public final BlockTier green = new BlockTier(655360, 240000, 10485760);
-		public final BlockTier lime = new BlockTier(2621440, 960000, 41943040);
-		public final BlockTier yellow = new BlockTier(10485760, 3840000, 167772160);
-		public final BlockTier orange = new BlockTier(41943040, 15360000, 671088640);
-		public final BlockTier white = new BlockTier(167772160, 61440000, 2684354560D);
-		public final BlockTier fading = new BlockTier(671088640, 245760000, 10737418240D);
-		public final BlockTier final_tier = new BlockTier(1000000000000D, 1000000000000D, Double.MAX_VALUE);
-	}
-
-	public static class BlockTier
-	{
-		@Config.LangKey("projectex.tiers.collector_output")
-		@Config.RangeDouble(min = 0D, max = Long.MAX_VALUE)
-		public double collector_output;
-
-		@Config.LangKey("projectex.tiers.relay_bonus")
-		@Config.RangeDouble(min = 0D, max = Long.MAX_VALUE)
-		public double relay_bonus;
-
-		@Config.LangKey("projectex.tiers.relay_transfer")
-		@Config.RangeDouble(min = 1D, max = Long.MAX_VALUE)
-		public double relay_transfer;
-
-		public BlockTier(double co, double rb, double rt)
-		{
-			collector_output = co;
-			relay_bonus = rb;
-			relay_transfer = rt;
-		}
-
-		public double powerFlowerOutput()
-		{
-			return collector_output * 18D + relay_bonus * 30D;
-		}
-	}
-
-	public static class ItemsConfig
-	{
-		@Config.LangKey("tile.projectex.personal_link.name")
-		public boolean link = true;
-
-		@Config.LangKey("item.projectex.knowledge_sharing_book.name")
-		public boolean knowledge_sharing_book = true;
-
-		public boolean stars = true;
-
-		@Config.LangKey("item.projectex.final_star.name")
-		public boolean final_star = true;
-
-		public boolean collectors = true;
-		public boolean relays = true;
-		public boolean power_flowers = true;
-		public boolean tome = true;
-
-		@Config.LangKey("tile.projectex.stone_table.name")
-		public boolean stone_table = true;
-
-		@Config.LangKey("item.projectex.arcane_tablet.name")
-		public boolean arcane_tablet = true;
-
-		@Config.LangKey("item.projectex.matter.clay.name")
-		public boolean clay_matter = false;
-
-		@Config.LangKey("tile.projectex.alchemy_table.name")
-		public boolean alchemy_table = true;
-	}
-
-	public static void sync()
-	{
-		ConfigManager.sync(ProjectEX.MOD_ID, Config.Type.INSTANCE);
-		general.stoneTableItemList = null;
-		general.stoneTableCache = null;
-	}
-
-	@SubscribeEvent
-	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
-	{
-		if (event.getModID().equals(ProjectEX.MOD_ID))
-		{
-			sync();
-		}
+				"minecraft:ghast_tear"
+		);
 	}
 }

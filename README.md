@@ -8,7 +8,34 @@ and the Final Star.
 
 ## Status
 
-Work in progress. The 1.20.1 port is being built on top of the 1.12.2 sources.
+Work in progress. The port advances one layer at a time, and every commit compiles.
+
+Ported so far:
+
+- Build system: ModDevGradle legacy, Forge 47.4.10, Java 17
+- Registries: `DeferredRegister` for blocks, items, block entities and the creative tab
+- Config: `ForgeConfigSpec`, including the per-tier EMC values and the stone table whitelist,
+  whose ore dictionary entries became item tags
+- Collectors, relays and power flowers, all 16 tiers, generating and moving EMC through
+  ProjectE's `IEmcStorage` capability
+- EMC links (energy, personal, refined, compressed refined) as EMC-to-owner blocks
+- Stone Table, opening ProjectE's transmutation screen
+- Matter items, compressed collectors, final star shard, clay matter
+
+Not ported yet. The 1.12.2 sources for these are preserved in the import commit
+`742a85c` and can be pulled back out with `git show 742a85c:<path>`:
+
+- **Models, blockstates and translations.** Block metadata became 48 separate blocks, so the
+  old assets no longer apply and the data generators have to be rewritten. Until then the new
+  blocks render untextured in game.
+- **GUI layer**: Arcane Tablet, Alchemy Table and the link interfaces, with their menus,
+  screens and the four network packets
+- **Item output from links**, which lives in those menus
+- **Energy Link's EMC to Forge Energy conversion**
+- **EMC storage items**: Magnum and Colossal Stars, Final Star, Knowledge Sharing Book,
+  which need ProjectE's `IItemEmcHolder` capability instead of the old `IItemEmc`
+- **JEI integration**
+- **Recipes**, which were registered in code in 1.12 and are data driven now
 
 ## Requirements
 

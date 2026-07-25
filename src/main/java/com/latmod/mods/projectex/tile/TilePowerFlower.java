@@ -1,78 +1,87 @@
 package com.latmod.mods.projectex.tile;
 
-import com.latmod.mods.projectex.block.EnumTier;
-import com.latmod.mods.projectex.integration.PersonalEMC;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
+import com.latmod.mods.projectex.block.BlockPowerFlower;
+import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
+import moze_intel.projecte.api.capabilities.PECapabilities;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
+import java.math.BigInteger;
 import java.util.UUID;
 
 /**
- * @author LatvianModder
+ * Generates EMC straight into its owner's transmutation knowledge. While the owner is offline
+ * the EMC accumulates here and is handed over on their next login.
  */
-public class TilePowerFlower extends TileEntity implements ITickable
-{
-	public UUID owner = new UUID(0L, 0L);
-	public String name = "";
-	public long storedEMC = 0L;
+public class TilePowerFlower extends BlockEntity {
+	public UUID owner = Util.NIL_UUID;
+	public String ownerName = "";
+	public int tick = 0;
+	public BigInteger storedEMC = BigInteger.ZERO;
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbt)
-	{
-		owner = nbt.getUniqueId("owner");
-		name = nbt.getString("name");
-		double storedEMC1 = nbt.getDouble("emc");
-		storedEMC = storedEMC1 > Long.MAX_VALUE ? Long.MAX_VALUE : (long) storedEMC1;
-		super.readFromNBT(nbt);
+	public TilePowerFlower(BlockPos pos, BlockState state) {
+		super(ProjectEXBlockEntities.POWER_FLOWER.get(), pos, state);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt)
-	{
-		nbt.setUniqueId("owner", owner);
-		nbt.setString("name", name);
-
-		if (storedEMC > 0L)
-		{
-			nbt.setLong("emc", storedEMC);
-		}
-
-		return super.writeToNBT(nbt);
+	public void load(CompoundTag tag) {
+		super.load(tag);
+		owner = tag.hasUUID("Owner") ? tag.getUUID("Owner") : Util.NIL_UUID;
+		ownerName = tag.getString("OwnerName");
+		tick = tag.getByte("Tick") & 0xFF;
+		String emc = tag.getString("StoredEMC");
+		storedEMC = emc.isEmpty() || emc.equals("0") ? BigInteger.ZERO : new BigInteger(emc);
 	}
 
 	@Override
-	public void onLoad()
-	{
-		if (world.isRemote)
-		{
-			world.tickableTileEntities.remove(this);
-		}
-
-		validate();
+	protected void saveAdditional(CompoundTag tag) {
+		super.saveAdditional(tag);
+		tag.putUUID("Owner", owner);
+		tag.putString("OwnerName", ownerName);
+		tag.putByte("Tick", (byte) tick);
+		tag.putString("StoredEMC", storedEMC.toString());
 	}
 
-	@Override
-	public void update()
-	{
-		if (world.isRemote || world.getTotalWorldTime() % 20L != TileRelay.mod(hashCode(), 20))
-		{
+	public void tick() {
+		if (level == null || level.getServer() == null) {
 			return;
 		}
 
-		storedEMC += EnumTier.byMeta(getBlockMetadata()).properties.powerFlowerOutput();
+		tick++;
 
-		EntityPlayerMP player = world.getMinecraftServer().getPlayerList().getPlayerByUUID(owner);
+		if (tick < 20) {
+			return;
+		}
 
-		if (player != null)
-		{
-			PersonalEMC.add(PersonalEMC.get(player), storedEMC);
-			storedEMC = 0;
+		tick = 0;
+
+		if (!(getBlockState().getBlock() instanceof BlockPowerFlower powerFlower)) {
+			return;
 		}
-		else
-		{
-			world.markChunkDirty(pos, this);
+
+		long generated = powerFlower.matter.powerFlowerOutput();
+
+		ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+		IKnowledgeProvider provider = player == null ? null
+				: player.getCapability(PECapabilities.KNOWLEDGE_CAPABILITY).orElse(null);
+
+		if (provider == null) {
+			storedEMC = storedEMC.add(BigInteger.valueOf(generated));
+			setChanged();
+			return;
 		}
+
+		provider.setEmc(provider.getEmc().add(BigInteger.valueOf(generated)).add(storedEMC));
+
+		if (!storedEMC.equals(BigInteger.ZERO)) {
+			storedEMC = BigInteger.ZERO;
+			setChanged();
+		}
+
+		provider.syncEmc(player);
 	}
 }

@@ -1,112 +1,95 @@
 package com.latmod.mods.projectex.block;
 
-import com.latmod.mods.projectex.gui.ProjectEXGuiHandler;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import moze_intel.projecte.gameObjs.container.TransmutationContainer;
+import moze_intel.projecte.utils.text.PELang;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
+import javax.annotation.Nullable;
+
+import java.util.List;
 
 /**
- * @author LatvianModder
+ * A transmutation table you can place on any face of a block. Opening it hands off to
+ * ProjectE's own transmutation screen.
  */
-public class BlockStoneTable extends Block
-{
-	private static final AxisAlignedBB[] AABBS = new AxisAlignedBB[] {
-			new AxisAlignedBB(0D, 0D, 0D, 1D, 0.25D, 1D),
-			new AxisAlignedBB(0D, 0.75D, 0D, 1D, 1D, 1D),
-			new AxisAlignedBB(0D, 0D, 0D, 1D, 1D, 0.25D),
-			new AxisAlignedBB(0D, 0D, 0.75D, 1D, 1D, 1D),
-			new AxisAlignedBB(0D, 0D, 0D, 0.25D, 1D, 1D),
-			new AxisAlignedBB(0.75D, 0D, 0D, 1D, 1D, 1D)
+public class BlockStoneTable extends Block {
+	public static final VoxelShape[] SHAPE = {
+			box(0, 0, 0, 16, 4, 16),
+			box(0, 12, 0, 16, 16, 16),
+			box(0, 0, 0, 16, 16, 4),
+			box(0, 0, 12, 16, 16, 16),
+			box(0, 0, 0, 4, 16, 16),
+			box(12, 0, 0, 16, 16, 16)
 	};
 
-	public BlockStoneTable()
-	{
-		super(Material.ROCK);
-		setHardness(2F);
-		setDefaultState(blockState.getBaseState().withProperty(BlockDirectional.FACING, EnumFacing.DOWN));
+	public BlockStoneTable() {
+		super(Properties.of().mapColor(MapColor.STONE).strength(1F).sound(SoundType.STONE).noOcclusion());
+		registerDefaultState(getStateDefinition().any().setValue(BlockStateProperties.FACING, Direction.DOWN));
 	}
 
 	@Override
-	protected BlockStateContainer createBlockState()
-	{
-		return new BlockStateContainer(this, BlockDirectional.FACING);
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+		builder.add(BlockStateProperties.FACING);
 	}
 
 	@Override
-	@Deprecated
-	public IBlockState getStateFromMeta(int meta)
-	{
-		return getDefaultState().withProperty(BlockDirectional.FACING, EnumFacing.byIndex(meta));
+	public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
+		return SHAPE[state.getValue(BlockStateProperties.FACING).ordinal()];
 	}
 
 	@Override
-	public int getMetaFromState(IBlockState state)
-	{
-		return state.getValue(BlockDirectional.FACING).getIndex();
+	public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+		return defaultBlockState().setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite());
 	}
 
 	@Override
-	@Deprecated
-	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
-		return getDefaultState().withProperty(BlockDirectional.FACING, facing.getOpposite());
-	}
-
-	@Override
-	@Deprecated
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-	{
-		return AABBS[state.getValue(BlockDirectional.FACING).getIndex()];
-	}
-
-	@Override
-	@Deprecated
-	public IBlockState withRotation(IBlockState state, Rotation rot)
-	{
-		return state.withProperty(BlockDirectional.FACING, rot.rotate(state.getValue(BlockDirectional.FACING)));
-	}
-
-	@Override
-	@Deprecated
-	public IBlockState withMirror(IBlockState state, Mirror mirror)
-	{
-		return state.withRotation(mirror.toRotation(state.getValue(BlockDirectional.FACING)));
-	}
-
-	@Override
-	@Deprecated
-	public boolean isOpaqueCube(IBlockState state)
-	{
-		return false;
-	}
-
-	@Override
-	@Deprecated
-	public boolean isFullCube(IBlockState state)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
-		if (!world.isRemote)
-		{
-			ProjectEXGuiHandler.open(player, ProjectEXGuiHandler.STONE_TABLE, pos.getX(), pos.getY(), pos.getZ());
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+			NetworkHooks.openScreen(serverPlayer, new TransmutationMenuProvider(), buffer -> buffer.writeEnum(InteractionHand.OFF_HAND));
 		}
 
-		return true;
+		return InteractionResult.sidedSuccess(level.isClientSide());
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> list, TooltipFlag flag) {
+		super.appendHoverText(stack, level, list, flag);
+		list.add(Component.translatable("block.projectex.stone_table.tooltip").withStyle(ChatFormatting.GRAY));
+	}
+
+	private static class TransmutationMenuProvider implements MenuProvider {
+		@Override
+		public AbstractContainerMenu createMenu(int windowId, Inventory playerInventory, Player player) {
+			return new TransmutationContainer(windowId, playerInventory);
+		}
+
+		@Override
+		public Component getDisplayName() {
+			return PELang.TRANSMUTATION_TRANSMUTE.translate();
+		}
 	}
 }

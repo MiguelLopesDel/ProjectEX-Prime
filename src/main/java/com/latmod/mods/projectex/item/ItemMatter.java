@@ -1,36 +1,16 @@
 package com.latmod.mods.projectex.item;
 
-import com.latmod.mods.projectex.block.EnumMatter;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import com.latmod.mods.projectex.Matter;
+import net.minecraft.world.item.Item;
 
 /**
- * @author LatvianModder
+ * One of the twelve matter items, used to craft the tier of the same name.
  */
-public class ItemMatter extends Item
-{
-	public ItemMatter()
-	{
-		setHasSubtypes(true);
-	}
+public class ItemMatter extends Item {
+	public final Matter matter;
 
-	@Override
-	public String getTranslationKey(ItemStack stack)
-	{
-		return getTranslationKey() + "." + EnumMatter.byMeta(stack.getMetadata()).getName();
-	}
-
-	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items)
-	{
-		if (isInCreativeTab(tab))
-		{
-			for (EnumMatter matter : EnumMatter.VALUES)
-			{
-				items.add(new ItemStack(this, 1, matter.ordinal()));
-			}
-		}
+	public ItemMatter(Matter matter) {
+		super(new Properties().fireResistant());
+		this.matter = matter;
 	}
 }
