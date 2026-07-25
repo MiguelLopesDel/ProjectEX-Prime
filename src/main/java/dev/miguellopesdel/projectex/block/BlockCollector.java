@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex.block;
 
 import dev.miguellopesdel.projectex.Matter;
+import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.blockentity.TileCollector;
 import moze_intel.projecte.utils.TransmutationEMCFormatter;
 import net.minecraft.ChatFormatting;
@@ -50,6 +51,6 @@ public class BlockCollector extends Block implements EntityBlock {
 		super.appendHoverText(stack, level, list, flag);
 		list.add(Component.translatable("block.projectex.collector.tooltip").withStyle(ChatFormatting.GRAY));
 		list.add(Component.translatable("block.projectex.collector.emc_produced",
-				TransmutationEMCFormatter.formatEMC(matter.collectorOutput).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+				TransmutationEMCFormatter.formatEMC(ProjectEXConfig.valuesOf(matter).collectorOutput()).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 	}
 }

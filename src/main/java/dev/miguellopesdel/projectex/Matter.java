@@ -15,7 +15,8 @@ import java.util.function.Supplier;
  * <p>In 1.12 this was split in two enums: {@code EnumTier} for the 16 machine tiers and
  * {@code EnumMatter} for the 12 matter items, which were block/item metadata. Metadata is
  * gone, so every tier is now its own block and every matter its own item, and a single enum
- * carries both.
+ * carries both. The tunable numbers live in {@link TierValues}, not here: this enum is
+ * identity only, so nothing can rewrite it while the game is running.
  */
 public enum Matter implements StringRepresentable {
 	BASIC("basic", false, 4L, 1L, 64L, () -> Items.DIAMOND_BLOCK),
@@ -43,11 +44,6 @@ public enum Matter implements StringRepresentable {
 	public final long defaultRelayBonus;
 	public final long defaultRelayTransfer;
 
-	/** Overwritten from the config on load, which is why these are not final. */
-	public long collectorOutput;
-	public long relayBonus;
-	public long relayTransfer;
-
 	@Nullable
 	private final Supplier<Item> craftingItem;
 
@@ -57,9 +53,6 @@ public enum Matter implements StringRepresentable {
 		this.defaultCollectorOutput = collectorOutput;
 		this.defaultRelayBonus = relayBonus;
 		this.defaultRelayTransfer = relayTransfer;
-		this.collectorOutput = collectorOutput;
-		this.relayBonus = relayBonus;
-		this.relayTransfer = relayTransfer;
 		this.craftingItem = craftingItem;
 	}
 
@@ -77,10 +70,6 @@ public enum Matter implements StringRepresentable {
 		return this == BASIC ? null : VALUES[ordinal() - 1];
 	}
 
-	/** A power flower is worth 18 collectors and 30 relays of the same tier. */
-	public long powerFlowerOutput() {
-		return collectorOutput * 18L + relayBonus * 30L;
-	}
 
 	@Override
 	public String getSerializedName() {

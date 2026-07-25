@@ -55,7 +55,7 @@ public final class ProjectEXConfig {
 		public final ForgeConfigSpec.BooleanValue enableStoneTableWhitelist;
 		public final ForgeConfigSpec.ConfigValue<List<? extends String>> stoneTableWhitelist;
 
-		public final Map<Matter, TierValues> tiers = new EnumMap<>(Matter.class);
+		public final Map<Matter, TierEntry> tiers = new EnumMap<>(Matter.class);
 
 		private Common(ForgeConfigSpec.Builder builder) {
 			builder.push("general");
@@ -99,7 +99,7 @@ public final class ProjectEXConfig {
 
 			for (Matter matter : Matter.VALUES) {
 				builder.push(matter.id);
-				tiers.put(matter, new TierValues(builder, matter));
+				tiers.put(matter, new TierEntry(builder, matter));
 				builder.pop();
 			}
 
@@ -107,12 +107,13 @@ public final class ProjectEXConfig {
 		}
 	}
 
-	public static class TierValues {
+	/** The config spec entries of one tier. The values they hold end up in a {@link TierValues}. */
+	public static class TierEntry {
 		public final ForgeConfigSpec.LongValue collectorOutput;
 		public final ForgeConfigSpec.LongValue relayBonus;
 		public final ForgeConfigSpec.LongValue relayTransfer;
 
-		private TierValues(ForgeConfigSpec.Builder builder, Matter matter) {
+		private TierEntry(ForgeConfigSpec.Builder builder, Matter matter) {
 			collectorOutput = builder.defineInRange("collector_output", matter.defaultCollectorOutput, 0L, Long.MAX_VALUE);
 			relayBonus = builder.defineInRange("relay_bonus", matter.defaultRelayBonus, 0L, Long.MAX_VALUE);
 			relayTransfer = builder.defineInRange("relay_transfer", matter.defaultRelayTransfer, 1L, Long.MAX_VALUE);
@@ -139,8 +140,28 @@ public final class ProjectEXConfig {
 	}
 
 	/**
-	 * Copies the configured tier values into {@link Matter}, which is what the blocks read at
-	 * runtime, so a config reload takes effect without a restart.
+	 * The values the blocks actually read. Replaced wholesale on a config reload rather than
+	 * mutated in place, so a tick sees one consistent set of numbers.
+	 */
+	private static volatile Map<Matter, TierValues> tierValues = defaultTierValues();
+
+	public static TierValues valuesOf(Matter matter) {
+		return tierValues.get(matter);
+	}
+
+	private static Map<Matter, TierValues> defaultTierValues() {
+		Map<Matter, TierValues> map = new EnumMap<>(Matter.class);
+
+		for (Matter matter : Matter.VALUES) {
+			map.put(matter, TierValues.defaultsOf(matter));
+		}
+
+		return map;
+	}
+
+	/**
+	 * Rebuilds the snapshot when the config loads or is reloaded, so changes take effect without
+	 * a restart.
 	 */
 	@SubscribeEvent
 	public static void onConfigLoad(ModConfigEvent event) {
@@ -148,13 +169,14 @@ public final class ProjectEXConfig {
 			return;
 		}
 
+		Map<Matter, TierValues> values = new EnumMap<>(Matter.class);
+
 		for (Matter matter : Matter.VALUES) {
-			TierValues values = COMMON.tiers.get(matter);
-			matter.collectorOutput = values.collectorOutput.get();
-			matter.relayBonus = values.relayBonus.get();
-			matter.relayTransfer = values.relayTransfer.get();
+			TierEntry entry = COMMON.tiers.get(matter);
+			values.put(matter, new TierValues(entry.collectorOutput.get(), entry.relayBonus.get(), entry.relayTransfer.get()));
 		}
 
+		tierValues = Map.copyOf(values);
 		stoneTableWhitelistCache = null;
 	}
 

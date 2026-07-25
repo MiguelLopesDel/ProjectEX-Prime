@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex.block;
 
 import dev.miguellopesdel.projectex.Matter;
+import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.blockentity.TilePowerFlower;
 import moze_intel.projecte.utils.TransmutationEMCFormatter;
 import net.minecraft.ChatFormatting;
@@ -71,7 +72,7 @@ public class BlockPowerFlower extends Block implements EntityBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof TilePowerFlower powerFlower) {
-			player.displayClientMessage(Component.literal(powerFlower.ownerName), true);
+			player.displayClientMessage(Component.literal(powerFlower.ownerBuffer.ownerName), true);
 		}
 
 		return super.use(state, level, pos, player, hand, hit);
@@ -80,9 +81,7 @@ public class BlockPowerFlower extends Block implements EntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
 		if (entity != null && level.getBlockEntity(pos) instanceof TilePowerFlower powerFlower) {
-			powerFlower.owner = entity.getUUID();
-			powerFlower.ownerName = entity.getScoreboardName();
-			powerFlower.setChanged();
+			powerFlower.setOwner(entity);
 		}
 	}
 
@@ -91,6 +90,6 @@ public class BlockPowerFlower extends Block implements EntityBlock {
 		super.appendHoverText(stack, level, list, flag);
 		list.add(Component.translatable("block.projectex.collector.tooltip").withStyle(ChatFormatting.GRAY));
 		list.add(Component.translatable("block.projectex.collector.emc_produced",
-				TransmutationEMCFormatter.formatEMC(matter.powerFlowerOutput()).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+				TransmutationEMCFormatter.formatEMC(ProjectEXConfig.valuesOf(matter).powerFlowerOutput()).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 	}
 }

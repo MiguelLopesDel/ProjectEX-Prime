@@ -1,6 +1,7 @@
 package dev.miguellopesdel.projectex.block;
 
 import dev.miguellopesdel.projectex.Matter;
+import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.blockentity.TileRelay;
 import moze_intel.projecte.utils.TransmutationEMCFormatter;
 import net.minecraft.ChatFormatting;
@@ -50,8 +51,8 @@ public class BlockRelay extends Block implements EntityBlock {
 		super.appendHoverText(stack, level, list, flag);
 		list.add(Component.translatable("block.projectex.relay.tooltip").withStyle(ChatFormatting.GRAY));
 		list.add(Component.translatable("block.projectex.relay.relay_bonus",
-				TransmutationEMCFormatter.formatEMC(matter.relayBonus).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+				TransmutationEMCFormatter.formatEMC(ProjectEXConfig.valuesOf(matter).relayBonus()).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 		list.add(Component.translatable("block.projectex.relay.max_transfer",
-				TransmutationEMCFormatter.formatEMC(matter.relayTransfer).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
+				TransmutationEMCFormatter.formatEMC(ProjectEXConfig.valuesOf(matter).relayTransfer()).copy().withStyle(ChatFormatting.GREEN)).withStyle(ChatFormatting.GRAY));
 	}
 }

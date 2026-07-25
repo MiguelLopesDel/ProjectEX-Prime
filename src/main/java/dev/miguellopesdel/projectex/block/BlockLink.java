@@ -38,7 +38,7 @@ public abstract class BlockLink extends Block implements EntityBlock {
 	@Override
 	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (!level.isClientSide() && level.getBlockEntity(pos) instanceof TileLink link) {
-			player.displayClientMessage(Component.literal(link.ownerName), true);
+			player.displayClientMessage(Component.literal(link.ownerBuffer.ownerName), true);
 		}
 
 		return super.use(state, level, pos, player, hand, hit);
@@ -47,9 +47,7 @@ public abstract class BlockLink extends Block implements EntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
 		if (entity != null && level.getBlockEntity(pos) instanceof TileLink link) {
-			link.owner = entity.getUUID();
-			link.ownerName = entity.getScoreboardName();
-			link.setChanged();
+			link.setOwner(entity);
 		}
 	}
 }
