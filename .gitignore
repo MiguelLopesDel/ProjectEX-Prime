@@ -5,6 +5,7 @@ bin
 .metadata
 .classpath
 .project
+eclipse
 
 # idea
 out
@@ -17,6 +18,14 @@ out
 build
 .gradle
 
-# other
-eclipse
+# minecraft run directories
 run
+runs
+run-data
+
+# local maven publish target
+repo
+
+# misc
+.env
+*.log
