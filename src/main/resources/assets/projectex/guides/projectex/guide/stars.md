@@ -21,6 +21,10 @@ They behave exactly like a Klein Star: hold them and they charge from a
 <ItemLink id="projectex:basic_relay" /> or from ProjectE's own, and anything that draws on a Klein
 Star draws on these. The durability bar shows how full one is.
 
+Crafting four stars into the next one up keeps whatever they were holding, so there is never a
+reason to empty them first. Four full stars make one full star, because each step up holds exactly
+four times as much.
+
 | Star | Capacity |
 | --- | --- |
 | Magnum Ein | 204,800,000 |

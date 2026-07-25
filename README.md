@@ -26,7 +26,8 @@ Ported so far:
 - Stone Table, opening ProjectE's transmutation screen
 - Matter items, compressed collectors, final star shard, clay matter
 - EMC storage items: Magnum and Colossal Stars (12 tiers) and the Final Star, through
-  ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying
+  ProjectE's `IItemEmcHolder`, including the Final Star's pedestal item copying and the EMC
+  a star keeps when it is crafted into the next tier up
 - Arcane Transmutation Tablet: a portable crafting grid that buys its ingredients back out of
   your EMC after every craft, beside a transmutation panel that searches, learns, unlearns,
   sells and buys. The panel is client side display only; every decision is the server's
@@ -43,8 +44,6 @@ Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 - **Knowledge Sharing Book**
 - **JEI integration**, including recipe transfer into the tablet and the search bar sync that
   the two JEI search modes are named after
-- **Carrying stored EMC across a star craft**: in 1.12 crafting four stars into the next tier
-  kept whatever EMC they held
 
 ## Requirements
 
