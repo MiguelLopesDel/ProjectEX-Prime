@@ -18,7 +18,9 @@ Ported so far:
   whose ore dictionary entries became item tags
 - Collectors, relays and power flowers, all 16 tiers, generating and moving EMC through
   ProjectE's `IEmcStorage` capability
-- EMC links (energy, personal, refined, compressed refined) as EMC-to-owner blocks
+- EMC links (energy, personal, refined, compressed refined): EMC and items both go to the
+  owner's transmutation balance, exposed as an item handler so hoppers, pipes and storage
+  networks drive them with no interface involved
 - Stone Table, opening ProjectE's transmutation screen
 - Matter items, compressed collectors, final star shard, clay matter
 - Assets and data generation: blockstates, models, translations, loot tables and
@@ -29,7 +31,10 @@ Not ported yet. The 1.12.2 sources for these are preserved in the import commit
 
 - **GUI layer**: Arcane Tablet, Alchemy Table and the link interfaces, with their menus,
   screens and the four network packets
-- **Item output from links**, which lives in those menus
+- **Picking what the output slots of a link produce**, which is what its menu is for; the
+  slots themselves already work once set
+- **Producing items while the owner is offline.** 1.12 shipped its own reader for the save
+  files of offline players; links currently only work while their owner is online
 - **Energy Link's EMC to Forge Energy conversion**
 - **EMC storage items**: Magnum and Colossal Stars, Final Star, Knowledge Sharing Book,
   which need ProjectE's `IItemEmcHolder` capability instead of the old `IItemEmc`
