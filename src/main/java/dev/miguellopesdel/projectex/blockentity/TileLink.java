@@ -32,6 +32,9 @@ public class TileLink extends EmcStorageBlockEntity {
 	private final LinkItemHandler items;
 	private LazyOptional<IItemHandler> itemCapability;
 
+	/** EMC from items eaten since the last payout. Saved, so unloading mid second loses nothing. */
+	private long earned;
+
 	public TileLink(BlockEntityType<?> type, BlockPos pos, BlockState state, int inputSlots, int outputSlots) {
 		super(type, pos, state);
 		items = new LinkItemHandler(this, inputSlots, outputSlots);
@@ -60,13 +63,45 @@ public class TileLink extends EmcStorageBlockEntity {
 		setChanged();
 	}
 
+	/**
+	 * Input is the one thing here that cannot wait for the beat. A slot holds sixty four, so eating
+	 * once a second would cap a refined link at sixty four items a second, and a refined link exists
+	 * to be fed by a storage system. 1.12 ate every tick for the same reason.
+	 */
+	@Override
+	protected void onTick() {
+		consumeInputs();
+	}
+
 	@Override
 	protected void onSecond() {
-		consumeInputs();
+		payIn();
 
 		if (ownerBuffer.hasPending() && ownerBuffer.deposit(level, 0L)) {
 			setChanged();
 		}
+	}
+
+	/**
+	 * Hands a whole second of eaten items over in one go. Paying per stack instead would set the
+	 * owner's balance, and send them a packet saying so, once for every slot that had something in
+	 * it, twenty times a second.
+	 */
+	private void payIn() {
+		if (earned <= 0L) {
+			return;
+		}
+
+		EmcAccount account = account();
+
+		if (account != null) {
+			account.deposit(BigInteger.valueOf(earned));
+		} else {
+			ownerBuffer.add(earned);
+		}
+
+		earned = 0L;
+		setChanged();
 	}
 
 	/**
@@ -78,7 +113,9 @@ public class TileLink extends EmcStorageBlockEntity {
 	 * an automated feed never backs up.
 	 */
 	private void consumeInputs() {
-		EmcAccount account = account();
+		EmcAccount account = null;
+		boolean lookedUp = false;
+		boolean ate = false;
 
 		for (int i = 0; i < items.inputCount(); i++) {
 			ItemStack stack = items.getInput(i);
@@ -93,18 +130,27 @@ public class TileLink extends EmcStorageBlockEntity {
 				continue;
 			}
 
-			if (account != null) {
-				if (learnsItems()) {
-					account.learn(stack);
-				}
-
-				account.deposit(BigInteger.valueOf(value).multiply(BigInteger.valueOf(stack.getCount())));
-			} else {
-				ownerBuffer.add(value * stack.getCount());
+			// Looked up lazily: an idle link runs this every tick and should not be searching the
+			// player list for an owner it has no reason to talk to yet.
+			if (!lookedUp) {
+				account = account();
+				lookedUp = true;
 			}
 
+			if (account != null && learnsItems()) {
+				account.learn(stack);
+			}
+
+			earned += value * stack.getCount();
 			items.clearInput(i);
-			setChanged();
+			ate = true;
+		}
+
+		if (ate) {
+			// Only the chunk needs telling. What a client draws from a link is its templates, and
+			// those have not changed; a block update per eaten stack, twenty times a second, would
+			// be a packet storm carrying nothing.
+			super.setChanged();
 		}
 	}
 
@@ -137,6 +183,7 @@ public class TileLink extends EmcStorageBlockEntity {
 		super.load(tag);
 		ownerBuffer.load(tag);
 		items.load(tag);
+		earned = tag.getLong("Earned");
 	}
 
 	@Override
@@ -144,6 +191,7 @@ public class TileLink extends EmcStorageBlockEntity {
 		super.saveAdditional(tag);
 		ownerBuffer.save(tag);
 		items.save(tag);
+		tag.putLong("Earned", earned);
 	}
 
 	@Override

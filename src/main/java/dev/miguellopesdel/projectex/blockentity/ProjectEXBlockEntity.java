@@ -25,12 +25,25 @@ public abstract class ProjectEXBlockEntity extends BlockEntity {
 	}
 
 	public final void tick() {
-		if (level == null || --cooldown > 0) {
+		if (level == null) {
+			return;
+		}
+
+		onTick();
+
+		if (--cooldown > 0) {
 			return;
 		}
 
 		cooldown = INTERVAL;
 		onSecond();
+	}
+
+	/**
+	 * Called every tick on the server, for the rare piece of work that cannot wait for the beat.
+	 * Anything put here runs twenty times as often, so it had better be cheap.
+	 */
+	protected void onTick() {
 	}
 
 	/** Called once per second on the server. */

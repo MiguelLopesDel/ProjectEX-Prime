@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import dev.miguellopesdel.projectex.Knowledge;
 import moze_intel.projecte.api.ItemInfo;
 import moze_intel.projecte.api.capabilities.IKnowledgeProvider;
 import moze_intel.projecte.api.capabilities.PECapabilities;
@@ -80,9 +81,7 @@ public interface EmcAccount {
 
 		@Override
 		public void learn(ItemInfo item) {
-			if (provider.addKnowledge(item)) {
-				provider.sync(player);
-			}
+			Knowledge.teach(player, provider, item);
 		}
 	}
 
@@ -113,6 +112,11 @@ public interface EmcAccount {
 			OfflineEmcStore.setBalance(server, owner, balance().add(amount));
 		}
 
+		/**
+		 * Unlike the online path this cannot ask a pack for permission: {@code
+		 * PlayerAttemptLearnEvent} needs the player it is about, and that player is not here. A pack
+		 * that vetoes an item still keeps it out of a link owned by someone logged in.
+		 */
 		@Override
 		public void learn(ItemInfo item) {
 			OfflineEmcStore.learn(server, owner, item);
