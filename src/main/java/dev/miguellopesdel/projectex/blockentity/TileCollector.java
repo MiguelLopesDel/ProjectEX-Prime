@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import com.google.common.math.LongMath;
 import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.block.BlockCollector;
 import moze_intel.projecte.gameObjs.block_entities.RelayMK1BlockEntity;
@@ -24,7 +25,9 @@ public class TileCollector extends EmcStorageBlockEntity {
 			return;
 		}
 
-		storedEMC += ProjectEXConfig.valuesOf(collector.matter).collectorOutput();
+		// A collector with no neighbour to give to piles up, and a pack is free to configure an
+		// output large enough that piling up would wrap.
+		storedEMC = LongMath.saturatedAdd(storedEMC, ProjectEXConfig.valuesOf(collector.matter).collectorOutput());
 
 		long transferred = EmcDistributor.distribute(level, worldPosition, storedEMC,
 				storage -> true, Long.MAX_VALUE, neighbour -> {

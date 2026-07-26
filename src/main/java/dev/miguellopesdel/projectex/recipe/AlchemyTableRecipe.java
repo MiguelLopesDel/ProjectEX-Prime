@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.recipe;
 
+import com.google.common.math.LongMath;
 import com.google.gson.JsonObject;
 import moze_intel.projecte.utils.EMCHelper;
 import net.minecraft.core.RegistryAccess;
@@ -64,7 +65,10 @@ public class AlchemyTableRecipe implements Recipe<Container> {
 			return cost;
 		}
 
-		return Math.max(MINIMUM_COST, (EMCHelper.getEmcValue(input) + EMCHelper.getEmcValue(output)) * 3L);
+		// Saturating: wrapping would come out negative, and the floor below would then price a step
+		// between two absurdly valuable items at the cheapest a step can be.
+		long both = LongMath.saturatedAdd(EMCHelper.getEmcValue(input), EMCHelper.getEmcValue(output));
+		return Math.max(MINIMUM_COST, LongMath.saturatedMultiply(both, 3L));
 	}
 
 	@Override

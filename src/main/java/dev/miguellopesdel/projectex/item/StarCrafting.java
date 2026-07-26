@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.item;
 
+import com.google.common.math.LongMath;
 import dev.miguellopesdel.projectex.ProjectEX;
 import moze_intel.projecte.api.capabilities.PECapabilities;
 import moze_intel.projecte.api.capabilities.block_entity.IEmcStorage;
@@ -44,7 +45,7 @@ public final class StarCrafting {
 			if (holder != null) {
 				// The ingredients are on their way out, so what they hold is only read, never taken:
 				// draining them would fight whatever the crafting screen does with them next.
-				carried += holder.getStoredEmc(ingredient);
+				carried = LongMath.saturatedAdd(carried, holder.getStoredEmc(ingredient));
 			}
 		}
 

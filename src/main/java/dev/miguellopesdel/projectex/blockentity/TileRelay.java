@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import com.google.common.math.LongMath;
 import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.TierValues;
 import dev.miguellopesdel.projectex.block.BlockRelay;
@@ -87,12 +88,16 @@ public class TileRelay extends EmcStorageBlockEntity {
 			return extractEmc(-emc, action);
 		}
 
-		if (action.execute()) {
-			storedEMC += emc;
+		// Saturating, because a relay with nowhere to push accumulates without limit. Wrapping
+		// would take it negative and it would then refuse to do anything ever again.
+		long inserted = LongMath.saturatedAdd(storedEMC, emc) - storedEMC;
+
+		if (action.execute() && inserted > 0L) {
+			storedEMC += inserted;
 			setChanged();
 		}
 
-		return emc;
+		return inserted;
 	}
 
 	@Override

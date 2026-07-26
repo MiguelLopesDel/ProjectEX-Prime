@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import com.google.common.math.LongMath;
 import moze_intel.projecte.api.proxy.IEMCProxy;
 import moze_intel.projecte.utils.EMCHelper;
 import java.math.BigInteger;
@@ -141,7 +142,7 @@ public class TileLink extends EmcStorageBlockEntity {
 				account.learn(stack);
 			}
 
-			earned += value * stack.getCount();
+			earned = LongMath.saturatedAdd(earned, LongMath.saturatedMultiply(value, stack.getCount()));
 			items.clearInput(i);
 			ate = true;
 		}
