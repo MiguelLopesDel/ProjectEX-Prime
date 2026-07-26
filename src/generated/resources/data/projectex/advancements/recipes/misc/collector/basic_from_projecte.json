@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_middle": {
+    "has_projecte_collector": {
       "conditions": {
         "items": [
           {
             "items": [
-              "projectex:white_matter"
+              "projecte:collector_mk1"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "projectex:matter/fading_v"
+        "recipe": "projectex:collector/basic_from_projecte"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_middle",
+      "has_projecte_collector",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "projectex:matter/fading_v"
+      "projectex:collector/basic_from_projecte"
     ]
   },
   "sends_telemetry_event": false

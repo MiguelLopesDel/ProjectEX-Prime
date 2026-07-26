@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_middle": {
+    "has_colossal_star": {
       "conditions": {
         "items": [
           {
             "items": [
-              "projectex:white_matter"
+              "projectex:colossal_star_omega"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "projectex:matter/fading_v"
+        "recipe": "projectex:final_star_shard"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_middle",
+      "has_colossal_star",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "projectex:matter/fading_v"
+      "projectex:final_star_shard"
     ]
   },
   "sends_telemetry_event": false

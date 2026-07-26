@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_middle": {
+    "has_aeternalis_fuel_block": {
       "conditions": {
         "items": [
           {
             "items": [
-              "projectex:white_matter"
+              "projecte:aeternalis_fuel_block"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "projectex:matter/fading_v"
+        "recipe": "projectex:relay/basic"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_middle",
+      "has_aeternalis_fuel_block",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "projectex:matter/fading_v"
+      "projectex:relay/basic"
     ]
   },
   "sends_telemetry_event": false

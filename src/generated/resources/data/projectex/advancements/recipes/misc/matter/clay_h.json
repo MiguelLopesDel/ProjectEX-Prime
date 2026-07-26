@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "projectex:white_matter"
+              "minecraft:clay_ball"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "projectex:matter/fading_v"
+        "recipe": "projectex:matter/clay_h"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "projectex:matter/fading_v"
+      "projectex:matter/clay_h"
     ]
   },
   "sends_telemetry_event": false

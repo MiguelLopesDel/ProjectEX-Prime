@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:relay",
+  "key": {
+    "A": {
+      "item": "projecte:aeternalis_fuel_block"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "S": {
+      "tag": "forge:glass"
+    }
+  },
+  "pattern": [
+    "OSO",
+    "OAO",
+    "OOO"
+  ],
+  "result": {
+    "item": "projectex:basic_relay"
+  },
+  "show_notification": true
+}

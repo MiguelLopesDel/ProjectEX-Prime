@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:star",
+  "key": {
+    "N": {
+      "tag": "forge:nether_stars"
+    },
+    "S": {
+      "item": "projectex:colossal_star_omega"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "SNS",
+    "SSS"
+  ],
+  "result": {
+    "item": "projectex:final_star_shard"
+  },
+  "show_notification": true
+}

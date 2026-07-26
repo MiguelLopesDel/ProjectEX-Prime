@@ -192,6 +192,17 @@ public class ProjectEXRecipes extends RecipeProvider {
 			}
 		}
 
+		// Eight of the biggest star there is, around a nether star.
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXItems.FINAL_STAR_SHARD.get())
+				.pattern("SSS")
+				.pattern("SNS")
+				.pattern("SSS")
+				.define('S', ProjectEXItems.COLOSSAL_STAR.get(ProjectEXItems.COLOSSAL_STAR.size() - 1).get())
+				.define('N', Tags.Items.NETHER_STARS)
+				.group("projectex:star")
+				.unlockedBy("has_colossal_star", has(ProjectEXItems.COLOSSAL_STAR.get(ProjectEXItems.COLOSSAL_STAR.size() - 1).get()))
+				.save(consumer);
+
 		// Eight of the last power flower there is, around a dragon egg.
 		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXItems.FINAL_STAR.get())
 				.pattern("FFF")
@@ -272,32 +283,94 @@ public class ProjectEXRecipes extends RecipeProvider {
 			}
 
 			Matter previous = matter.getPrevious();
-			Item result = ProjectEXItems.MATTER.get(matter).get();
 			Item input = previous.hasMatterItem ? ProjectEXItems.MATTER.get(previous).get() : previous.getCraftingItem().get();
 
-			ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result)
-					.pattern("FFF")
-					.pattern("MMM")
-					.pattern("FFF")
-					.define('F', fuel)
-					.define('M', input)
-					.group("projectex:matter")
-					.unlockedBy("has_previous_matter", has(input))
-					.save(consumer, id("matter/" + matter.id + "_h"));
+			bothWays(consumer, ProjectEXItems.MATTER.get(matter).get(), fuel, input, "matter/" + matter.id);
+		}
 
-			ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result)
-					.pattern("FMF")
-					.pattern("FMF")
-					.pattern("FMF")
-					.define('F', fuel)
-					.define('M', input)
-					.group("projectex:matter")
-					.unlockedBy("has_previous_matter", has(input))
-					.save(consumer, id("matter/" + matter.id + "_v"));
+		// Clay Matter is not part of the ladder: it is a clay ball taken all the way up in one step.
+		bothWays(consumer, ProjectEXItems.CLAY_MATTER.get(),
+				ProjectEXItems.MATTER.get(Matter.FADING).get(), Items.CLAY_BALL, "matter/clay");
+	}
+
+	/**
+	 * Three of one thing across the middle, six of another around it. Emitted in both orientations,
+	 * because which way round a player builds it is not something the recipe should care about.
+	 */
+	private void bothWays(Consumer<FinishedRecipe> consumer, ItemLike result, ItemLike around, ItemLike middle, String path) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result)
+				.pattern("FFF")
+				.pattern("MMM")
+				.pattern("FFF")
+				.define('F', around)
+				.define('M', middle)
+				.group("projectex:matter")
+				.unlockedBy("has_middle", has(middle))
+				.save(consumer, id(path + "_h"));
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, result)
+				.pattern("FMF")
+				.pattern("FMF")
+				.pattern("FMF")
+				.define('F', around)
+				.define('M', middle)
+				.group("projectex:matter")
+				.unlockedBy("has_middle", has(middle))
+				.save(consumer, id(path + "_v"));
+	}
+
+	/**
+	 * How the ladder starts. Everything else in this mod is an upgrade of the tier below it, so
+	 * without these two the whole thing is unreachable without a creative tab.
+	 *
+	 * <p>The first three tiers can also be had by handing in ProjectE's own collectors and relays,
+	 * which is what stops a player who already built those from having to build them again.
+	 */
+	private void firstTierMachines(Consumer<FinishedRecipe> consumer) {
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXBlocks.COLLECTOR.get(Matter.BASIC).get())
+				.pattern("GSG")
+				.pattern("GAG")
+				.pattern("GFG")
+				.define('G', Items.GLOWSTONE)
+				.define('S', Tags.Items.GLASS)
+				.define('A', PEBlocks.AETERNALIS_FUEL.asItem())
+				.define('F', Items.FURNACE)
+				.group("projectex:collector")
+				.unlockedBy("has_aeternalis_fuel_block", has(PEBlocks.AETERNALIS_FUEL.asItem()))
+				.save(consumer, id("collector/" + Matter.BASIC.id));
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ProjectEXBlocks.RELAY.get(Matter.BASIC).get())
+				.pattern("OSO")
+				.pattern("OAO")
+				.pattern("OOO")
+				.define('O', Tags.Items.OBSIDIAN)
+				.define('S', Tags.Items.GLASS)
+				.define('A', PEBlocks.AETERNALIS_FUEL.asItem())
+				.group("projectex:relay")
+				.unlockedBy("has_aeternalis_fuel_block", has(PEBlocks.AETERNALIS_FUEL.asItem()))
+				.save(consumer, id("relay/" + Matter.BASIC.id));
+
+		Matter[] tiers = {Matter.BASIC, Matter.DARK, Matter.RED};
+		ItemLike[] collectors = {PEBlocks.COLLECTOR.asItem(), PEBlocks.COLLECTOR_MK2.asItem(), PEBlocks.COLLECTOR_MK3.asItem()};
+		ItemLike[] relays = {PEBlocks.RELAY.asItem(), PEBlocks.RELAY_MK2.asItem(), PEBlocks.RELAY_MK3.asItem()};
+
+		for (int i = 0; i < tiers.length; i++) {
+			convert(consumer, collectors[i], ProjectEXBlocks.COLLECTOR.get(tiers[i]).get(), "collector", tiers[i]);
+			convert(consumer, relays[i], ProjectEXBlocks.RELAY.get(tiers[i]).get(), "relay", tiers[i]);
 		}
 	}
 
+	private void convert(Consumer<FinishedRecipe> consumer, ItemLike from, ItemLike to, String kind, Matter tier) {
+		ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, to)
+				.requires(from)
+				.group("projectex:" + kind)
+				.unlockedBy("has_projecte_" + kind, has(from))
+				.save(consumer, id(kind + "/" + tier.id + "_from_projecte"));
+	}
+
 	private void machines(Consumer<FinishedRecipe> consumer) {
+		firstTierMachines(consumer);
+
 		for (Matter matter : Matter.VALUES) {
 			ItemLike collector = ProjectEXBlocks.COLLECTOR.get(matter).get();
 			ItemLike relay = ProjectEXBlocks.RELAY.get(matter).get();
@@ -323,8 +396,7 @@ public class ProjectEXRecipes extends RecipeProvider {
 					.unlockedBy("has_compressed_collector", has(compressed))
 					.save(consumer, id("power_flower/" + matter.id));
 
-			// The first tier is crafted from its own material rather than upgraded from a
-			// previous tier, and that recipe is part of the item phase of the port.
+			// The first tier is built from scratch rather than upgraded; see firstTierMachines.
 			Matter previous = matter.getPrevious();
 
 			if (previous == null) {

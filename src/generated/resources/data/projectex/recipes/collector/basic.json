@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:collector",
+  "key": {
+    "A": {
+      "item": "projecte:aeternalis_fuel_block"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "G": {
+      "item": "minecraft:glowstone"
+    },
+    "S": {
+      "tag": "forge:glass"
+    }
+  },
+  "pattern": [
+    "GSG",
+    "GAG",
+    "GFG"
+  ],
+  "result": {
+    "item": "projectex:basic_collector"
+  },
+  "show_notification": true
+}

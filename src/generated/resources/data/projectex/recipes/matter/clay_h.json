@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "projectex:matter",
+  "key": {
+    "F": {
+      "item": "projectex:fading_matter"
+    },
+    "M": {
+      "item": "minecraft:clay_ball"
+    }
+  },
+  "pattern": [
+    "FFF",
+    "MMM",
+    "FFF"
+  ],
+  "result": {
+    "item": "projectex:clay_matter"
+  },
+  "show_notification": true
+}
