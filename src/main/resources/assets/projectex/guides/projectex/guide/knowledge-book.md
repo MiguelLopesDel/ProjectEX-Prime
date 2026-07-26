@@ -4,6 +4,8 @@ navigation:
   title: Knowledge Sharing Book
   icon: knowledge_sharing_book
   position: 58
+item_ids:
+  - projectex:knowledge_sharing_book
 ---
 
 # Knowledge Sharing Book

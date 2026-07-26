@@ -4,6 +4,20 @@ navigation:
   title: Matter and Tiers
   icon: magenta_matter
   position: 60
+item_ids:
+  - projectex:magenta_matter
+  - projectex:pink_matter
+  - projectex:purple_matter
+  - projectex:violet_matter
+  - projectex:blue_matter
+  - projectex:cyan_matter
+  - projectex:green_matter
+  - projectex:lime_matter
+  - projectex:yellow_matter
+  - projectex:orange_matter
+  - projectex:white_matter
+  - projectex:fading_matter
+  - projectex:clay_matter
 ---
 
 # Matter and Tiers

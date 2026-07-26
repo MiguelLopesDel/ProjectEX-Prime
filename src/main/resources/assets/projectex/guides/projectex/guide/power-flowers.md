@@ -4,6 +4,39 @@ navigation:
   title: Power Flowers
   icon: basic_power_flower
   position: 30
+item_ids:
+  - projectex:basic_power_flower
+  - projectex:dark_power_flower
+  - projectex:red_power_flower
+  - projectex:magenta_power_flower
+  - projectex:pink_power_flower
+  - projectex:purple_power_flower
+  - projectex:violet_power_flower
+  - projectex:blue_power_flower
+  - projectex:cyan_power_flower
+  - projectex:green_power_flower
+  - projectex:lime_power_flower
+  - projectex:yellow_power_flower
+  - projectex:orange_power_flower
+  - projectex:white_power_flower
+  - projectex:fading_power_flower
+  - projectex:final_power_flower
+  - projectex:basic_compressed_collector
+  - projectex:dark_compressed_collector
+  - projectex:red_compressed_collector
+  - projectex:magenta_compressed_collector
+  - projectex:pink_compressed_collector
+  - projectex:purple_compressed_collector
+  - projectex:violet_compressed_collector
+  - projectex:blue_compressed_collector
+  - projectex:cyan_compressed_collector
+  - projectex:green_compressed_collector
+  - projectex:lime_compressed_collector
+  - projectex:yellow_compressed_collector
+  - projectex:orange_compressed_collector
+  - projectex:white_compressed_collector
+  - projectex:fading_compressed_collector
+  - projectex:final_compressed_collector
 ---
 
 # Power Flowers

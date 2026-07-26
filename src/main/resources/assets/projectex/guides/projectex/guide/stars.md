@@ -4,6 +4,21 @@ navigation:
   title: Stars
   icon: magnum_star_ein
   position: 55
+item_ids:
+  - projectex:magnum_star_ein
+  - projectex:magnum_star_zwei
+  - projectex:magnum_star_drei
+  - projectex:magnum_star_vier
+  - projectex:magnum_star_sphere
+  - projectex:magnum_star_omega
+  - projectex:colossal_star_ein
+  - projectex:colossal_star_zwei
+  - projectex:colossal_star_drei
+  - projectex:colossal_star_vier
+  - projectex:colossal_star_sphere
+  - projectex:colossal_star_omega
+  - projectex:final_star
+  - projectex:final_star_shard
 ---
 
 # Magnum, Colossal and Final Stars

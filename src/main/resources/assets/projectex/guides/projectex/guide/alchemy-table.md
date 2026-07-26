@@ -4,6 +4,8 @@ navigation:
   title: Alchemy Table
   icon: alchemy_table
   position: 54
+item_ids:
+  - projectex:alchemy_table
 ---
 
 # Alchemy Table

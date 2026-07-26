@@ -4,6 +4,11 @@ navigation:
   title: EMC Links
   icon: personal_link
   position: 40
+item_ids:
+  - projectex:energy_link
+  - projectex:personal_link
+  - projectex:refined_link
+  - projectex:compressed_refined_link
 ---
 
 # EMC Links

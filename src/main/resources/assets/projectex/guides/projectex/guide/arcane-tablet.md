@@ -4,6 +4,8 @@ navigation:
   title: Arcane Transmutation Tablet
   icon: arcane_tablet
   position: 52
+item_ids:
+  - projectex:arcane_tablet
 ---
 
 # Arcane Transmutation Tablet

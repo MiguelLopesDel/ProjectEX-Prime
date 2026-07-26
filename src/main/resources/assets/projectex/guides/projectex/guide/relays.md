@@ -4,6 +4,23 @@ navigation:
   title: Relays
   icon: basic_relay
   position: 20
+item_ids:
+  - projectex:basic_relay
+  - projectex:dark_relay
+  - projectex:red_relay
+  - projectex:magenta_relay
+  - projectex:pink_relay
+  - projectex:purple_relay
+  - projectex:violet_relay
+  - projectex:blue_relay
+  - projectex:cyan_relay
+  - projectex:green_relay
+  - projectex:lime_relay
+  - projectex:yellow_relay
+  - projectex:orange_relay
+  - projectex:white_relay
+  - projectex:fading_relay
+  - projectex:final_relay
 ---
 
 # Relays

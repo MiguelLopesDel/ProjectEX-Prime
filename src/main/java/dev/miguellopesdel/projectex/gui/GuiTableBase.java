@@ -304,6 +304,10 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderBackground(graphics);
 		super.render(graphics, mouseX, mouseY, partialTick);
+
+		// AbstractContainerScreen draws the slots but never their tooltips; every screen asks for
+		// them itself. Without this line nothing in the screen can be hovered for its name.
+		renderTooltip(graphics, mouseX, mouseY);
 	}
 
 	@Override

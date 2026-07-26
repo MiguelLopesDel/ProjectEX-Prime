@@ -4,6 +4,8 @@ navigation:
   title: Stone Transmutation Table
   icon: stone_table
   position: 50
+item_ids:
+  - projectex:stone_table
 ---
 
 # Stone Transmutation Table

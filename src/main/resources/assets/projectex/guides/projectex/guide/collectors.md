@@ -4,6 +4,23 @@ navigation:
   title: Collectors
   icon: basic_collector
   position: 10
+item_ids:
+  - projectex:basic_collector
+  - projectex:dark_collector
+  - projectex:red_collector
+  - projectex:magenta_collector
+  - projectex:pink_collector
+  - projectex:purple_collector
+  - projectex:violet_collector
+  - projectex:blue_collector
+  - projectex:cyan_collector
+  - projectex:green_collector
+  - projectex:lime_collector
+  - projectex:yellow_collector
+  - projectex:orange_collector
+  - projectex:white_collector
+  - projectex:fading_collector
+  - projectex:final_collector
 ---
 
 # Collectors
