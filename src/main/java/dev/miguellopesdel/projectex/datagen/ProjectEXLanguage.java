@@ -83,6 +83,9 @@ public class ProjectEXLanguage extends LanguageProvider {
 		add("gui.projectex.arcane_tablet.clear", "Clear");
 		add("gui.projectex.arcane_tablet.recipe_too_big", "This recipe does not fit in a three by three grid");
 
+		add("key.categories.projectex", "ProjectEX");
+		add("key.projectex.focus_search", "Focus Search Bar");
+
 		add("projectex.general.search_type", "Search Type");
 		add("projectex.general.search_type.normal", "Normal");
 		add("projectex.general.search_type.autoselected", "Auto-selected");

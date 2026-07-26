@@ -2,6 +2,8 @@ package dev.miguellopesdel.projectex.gui;
 
 import dev.miguellopesdel.projectex.ProjectEXConfig;
 import dev.miguellopesdel.projectex.client.EnumSearchType;
+import dev.miguellopesdel.projectex.client.ProjectEXKeys;
+import dev.miguellopesdel.projectex.integration.jei.JeiSearchSync;
 import dev.miguellopesdel.projectex.net.PacketTableAction;
 import dev.miguellopesdel.projectex.net.ProjectEXNetwork;
 import moze_intel.projecte.api.ItemInfo;
@@ -19,6 +21,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.fml.ModList;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -193,6 +196,7 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 			search = searchField.getValue();
 			page = 0;
 			refreshMatches();
+			syncJeiSearch();
 		} else if (knownCount != menu.knowledge.getKnowledge().size()) {
 			// Learning or forgetting something happens on the server, so the ring finds out the
 			// same way the player does: the knowledge it is drawn from changed underneath it.
@@ -263,8 +267,24 @@ public abstract class GuiTableBase<T extends ContainerTableBase> extends Abstrac
 				&& mouseY >= box.getY() && mouseY < box.getY() + box.getHeight();
 	}
 
+	/**
+	 * Points JEI's own search at whatever was typed here, when the player asked for that. The class
+	 * that does it is only reached through this check, so it is never loaded without JEI to load.
+	 */
+	private void syncJeiSearch() {
+		if (searchType().jeiSync && ModList.get().isLoaded("jei")) {
+			JeiSearchSync.setFilter(search);
+		}
+	}
+
 	@Override
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
+		if (!searchField.isFocused() && ProjectEXKeys.FOCUS_SEARCH.matches(key, scanCode)) {
+			searchField.setFocused(true);
+			setFocused(searchField);
+			return true;
+		}
+
 		// Typing "e" into the search box must not close the screen, which is what the inventory key
 		// would otherwise do before the box ever sees the character.
 		if (searchField.isFocused() && key != GLFW.GLFW_KEY_ESCAPE) {

@@ -39,21 +39,17 @@ Ported so far:
   sells and buys. The panel is client side display only; every decision is the server's
 - Knowledge Sharing Book: sign it and hand it over, and the reader learns everything you know.
   The author does not have to be online
-- JEI: an Alchemy Table category, the ring answering to R and U, and the transfer arrow filling
-  the tablet's grid from your inventory first and your EMC for the rest
+- JEI: an Alchemy Table category, the ring answering to R and U, the transfer arrow filling
+  the tablet's grid from your inventory first and your EMC for the rest, and the two JEI Sync
+  search modes driving JEI's own filter
+- A keybind, tab by default, that puts the cursor in a transmutation screen's search bar
 - Assets and data generation: blockstates, models, translations, loot tables and
   recipes for everything above
 - In game guide, written for [GuideME](https://github.com/AppliedEnergistics/GuideME) and
   covering collectors, relays, power flowers, the EMC links, the tier ladder and the tablet
 
-Everything the 1.12.2 mod did is ported. What is left is smaller than a feature:
-
-- The two **JEI Sync** search modes behave like the two plain ones; the search bar does not yet
-  drive JEI's filter
-- 1.12 had a **keybind** to focus the search bar from anywhere in a transmutation screen
-
-The 1.12.2 sources are preserved in the import commit `742a85c` and can be pulled back out with
-`git show 742a85c:<path>`.
+Everything the 1.12.2 mod did is ported. Its sources are preserved in the import commit
+`742a85c` and can be pulled back out with `git show 742a85c:<path>`.
 
 ## Requirements
 

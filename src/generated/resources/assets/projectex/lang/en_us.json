@@ -121,6 +121,8 @@
   "item.projectex.yellow_compressed_collector": "Compressed Yellow Matter Collector [MK12]",
   "item.projectex.yellow_matter": "Yellow Matter",
   "itemGroup.projectex": "ProjectEX",
+  "key.categories.projectex": "ProjectEX",
+  "key.projectex.focus_search": "Focus Search Bar",
   "projectex.general.search_type": "Search Type",
   "projectex.general.search_type.autoselected": "Auto-selected",
   "projectex.general.search_type.autoselected_jei_sync": "Auto-selected (JEI Sync)",

@@ -22,6 +22,7 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.IRecipeTransferRegistration;
 import mezz.jei.api.runtime.IClickableIngredient;
 import mezz.jei.api.runtime.IIngredientManager;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.Rect2i;
@@ -65,6 +66,16 @@ public class ProjectEXJEI implements IModPlugin {
 	@Override
 	public void registerRecipeTransferHandlers(IRecipeTransferRegistration registration) {
 		registration.addRecipeTransferHandler(new ArcaneTabletTransfer(registration.getTransferHelper()), RecipeTypes.CRAFTING);
+	}
+
+	@Override
+	public void onRuntimeAvailable(IJeiRuntime runtime) {
+		JeiSearchSync.setRuntime(runtime);
+	}
+
+	@Override
+	public void onRuntimeUnavailable() {
+		JeiSearchSync.setRuntime(null);
 	}
 
 	@Override
