@@ -1,5 +1,6 @@
 package dev.miguellopesdel.projectex.blockentity;
 
+import com.google.common.math.LongMath;
 import dev.miguellopesdel.projectex.recipe.AlchemyTableRecipe;
 import dev.miguellopesdel.projectex.recipe.ProjectEXRecipeTypes;
 import moze_intel.projecte.api.capabilities.block_entity.IEmcStorage;
@@ -194,7 +195,7 @@ public class TileAlchemyTable extends BlockEntity implements IEmcStorage {
 
 	@Override
 	public long getMaximumEmc() {
-		return cost * BUFFER;
+		return LongMath.saturatedMultiply(cost, BUFFER);
 	}
 
 	@Override

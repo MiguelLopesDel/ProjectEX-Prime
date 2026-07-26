@@ -1,5 +1,7 @@
 package dev.miguellopesdel.projectex;
 
+import com.google.common.math.LongMath;
+
 /**
  * The tunable numbers of one tier, as an immutable snapshot.
  *
@@ -15,6 +17,9 @@ public record TierValues(long collectorOutput, long relayBonus, long relayTransf
 
 	/** A power flower is worth 18 collectors and 30 relays of its tier. */
 	public long powerFlowerOutput() {
-		return collectorOutput * 18L + relayBonus * 30L;
+		// A pack can set either of these as high as a long goes, and eighteen of one plus thirty of
+		// the other would then wrap. A flower generating a negative amount would silently stop.
+		return LongMath.saturatedAdd(LongMath.saturatedMultiply(collectorOutput, 18L),
+				LongMath.saturatedMultiply(relayBonus, 30L));
 	}
 }

@@ -9,6 +9,7 @@ version="${mod_version}"
 displayName="${mod_name}"
 authors="${mod_authors}"
 logoFile="assets/projectex/textures/logo.png"
+displayURL="https://github.com/MiguelLopesDel/ProjectEX-Prime"
 credits="Original mod by LatvianModder / FTB Team, licensed under LGPL-3.0. This is an unofficial port and is not affiliated with FTB or ProjectE."
 description='''${mod_description}'''
 
